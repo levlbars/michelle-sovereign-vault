@@ -1,0 +1,217 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>MICHELLE — Model Card · Qwen3.5-4B W8A16</title>
+<meta name="description" content="Model card for Michelle-Qwen3.5-4B-W8A16: on-device VLM for Galaxy S24+ Hexagon NPU.">
+<style>
+  :root{
+    --teal:#2dd4bf;--violet:#a78bfa;--amber:#fbbf24;
+    --bg:#070b12;--bg2:#0d1320;--glass:rgba(255,255,255,.045);
+    --border:rgba(255,255,255,.09);--text:#dbe4f0;--dim:#7d8aa0;
+  }
+  *{box-sizing:border-box;margin:0;padding:0}
+  body{
+    background:linear-gradient(180deg,var(--bg),var(--bg2));
+    color:var(--text);min-height:100vh;
+    font-family:-apple-system,BlinkMacSystemFont,"Segoe UI",Roboto,Ubuntu,sans-serif;
+    line-height:1.6;-webkit-font-smoothing:antialiased;
+  }
+  .wrap{max-width:860px;margin:0 auto;padding:48px 22px 100px}
+  h1{font-size:2rem;font-weight:800;letter-spacing:-.02em;margin-bottom:6px;
+    background:linear-gradient(90deg,#fff,var(--teal) 60%,var(--violet));
+    -webkit-background-clip:text;background-clip:text;-webkit-text-fill-color:transparent}
+  h2{font-size:1.2rem;font-weight:700;margin:36px 0 12px;color:var(--teal)}
+  h3{font-size:.98rem;font-weight:700;margin:22px 0 8px;color:var(--text)}
+  p{color:var(--dim);margin-bottom:12px;font-size:.93rem}
+  a{color:var(--teal);text-decoration:none}
+  a:hover{text-decoration:underline}
+  .eyebrow{letter-spacing:.4em;font-size:.7rem;color:var(--teal);text-transform:uppercase;margin-bottom:8px}
+  .sub{color:var(--dim);font-size:.95rem;margin-bottom:28px}
+  .badge-row{display:flex;gap:8px;flex-wrap:wrap;margin-bottom:28px}
+  .badge{display:inline-block;padding:4px 12px;border-radius:999px;font-size:.74rem;font-weight:700;
+    border:1px solid;white-space:nowrap}
+  .b-teal{color:var(--teal);border-color:rgba(45,212,191,.35);background:rgba(45,212,191,.09)}
+  .b-violet{color:var(--violet);border-color:rgba(167,139,250,.35);background:rgba(167,139,250,.09)}
+  .b-amber{color:var(--amber);border-color:rgba(251,191,36,.3);background:rgba(251,191,36,.08)}
+  .b-dim{color:var(--dim);border-color:var(--border);background:var(--glass)}
+  .card{background:var(--glass);border:1px solid var(--border);border-radius:14px;
+    padding:20px 24px;margin-bottom:16px}
+  .kv{display:grid;grid-template-columns:200px 1fr;gap:8px 16px;font-size:.9rem}
+  .k{color:var(--dim)}
+  .v{color:var(--text)}
+  .mono{font-family:"SF Mono",Menlo,Consolas,monospace;font-size:.85em}
+  table{width:100%;border-collapse:collapse;font-size:.88rem;margin:12px 0}
+  th{text-align:left;color:var(--dim);font-size:.74rem;text-transform:uppercase;letter-spacing:.1em;
+    padding:7px 10px;border-bottom:1px solid var(--border)}
+  td{padding:9px 10px;border-bottom:1px solid rgba(255,255,255,.04);color:var(--dim)}
+  td:first-child{color:var(--text)}
+  tr:hover td{background:rgba(255,255,255,.025)}
+  .measured{color:var(--teal)!important}
+  .warn-box{background:rgba(251,191,36,.06);border:1px solid rgba(251,191,36,.22);border-radius:10px;
+    padding:12px 16px;font-size:.86rem;color:var(--amber);margin:12px 0}
+  .gate-box{background:rgba(248,113,113,.06);border:1px solid rgba(248,113,113,.22);border-radius:10px;
+    padding:12px 16px;font-size:.86rem;color:#f87171;margin:12px 0}
+  details{border:1px solid var(--border);border-radius:12px;margin:10px 0}
+  summary{padding:12px 16px;cursor:pointer;font-weight:600;font-size:.9rem;
+    list-style:none;display:flex;justify-content:space-between;user-select:none;color:var(--text)}
+  summary::-webkit-details-marker{display:none}
+  summary::after{content:"▾";color:var(--dim);transition:transform .3s}
+  details[open] summary::after{transform:rotate(180deg)}
+  .db{padding:0 16px 16px;font-size:.88rem;color:var(--dim);line-height:1.7}
+  .rule{height:1px;background:linear-gradient(90deg,var(--border),transparent);margin:32px 0}
+  footer{text-align:center;color:var(--dim);font-size:.8rem;margin-top:60px;padding-top:24px;
+    border-top:1px solid var(--border)}
+</style>
+</head>
+<body>
+<div class="wrap">
+  <div class="eyebrow">Model Card</div>
+  <h1>Michelle-Qwen3.5-4B-W8A16</h1>
+  <p class="sub">Qwen3.5-4B unified VLM, SFT-tuned with reasoning distillation, quantized W8A16 for on-device inference on Galaxy S24+ Hexagon NPU.</p>
+
+  <div class="badge-row">
+    <span class="badge b-teal">W8A16 · Hexagon HTP</span>
+    <span class="badge b-violet">Qwen3.5-4B base</span>
+    <span class="badge b-amber">~54 tok/s prefill</span>
+    <span class="badge b-teal">Galaxy S24+ proven</span>
+    <span class="badge b-dim">Apache-2.0</span>
+    <span class="badge b-dim">Weights gated</span>
+  </div>
+
+  <h2>Model Summary</h2>
+  <div class="card">
+    <div class="kv">
+      <span class="k">Base model</span><span class="v">Qwen3.5-4B (unified VLM, embedded vision tower)</span>
+      <span class="k">Fine-tune method</span><span class="v">SFT, BF16, 8,710-record reasoning distillation dataset</span>
+      <span class="k">Weight format</span><span class="v mono">W8A16 — INT8 weights / FP16 activations</span>
+      <span class="k">Training precision</span><span class="v mono">BF16</span>
+      <span class="k">Vision tower</span><span class="v">FP16 (frozen during SFT, Adreno GPU at inference)</span>
+      <span class="k">LM deployment</span><span class="v">Hexagon NPU (HTP), 5 context bins</span>
+      <span class="k">Toolchain</span><span class="v">QAIRT 2.45 · transformers 5.5.0 · unsloth</span>
+      <span class="k">Training GPU</span><span class="v">A100 80GB (SFT) · RTX PRO 4500 Blackwell 32GB (compile)</span>
+      <span class="k">Deploy device</span><span class="v">Galaxy S24+ SM-S926U1 (Snapdragon 8 Gen 3 / SM8650)</span>
+      <span class="k">License</span><span class="v">Apache-2.0</span>
+      <span class="k">Weights status</span><span class="v" style="color:#f87171">Gated — request access</span>
+    </div>
+  </div>
+
+  <div class="rule"></div>
+
+  <h2>Benchmarks — Real S24+ Hardware</h2>
+  <p>Method: <span class="mono">qnn-net-run --profiling_level detailed</span> over Tailscale ADB.
+     Measured 2026-06-10. No simulation. Device: SM-S926U1, SM8650, HTP W8A16, perf_profile=burst.</p>
+
+  <table>
+    <thead><tr><th>Metric</th><th>Value</th><th>Notes</th></tr></thead>
+    <tbody>
+      <tr><td>5-bin prefill throughput</td><td class="measured">~54 tok/s</td><td>512-token input, floor (bin1/5 parse incomplete → true floor ~46–50 tok/s)</td></tr>
+      <tr><td>5-bin chain time</td><td class="measured">~9.4 s</td><td>512-tok prefill, all 5 bins sequentially with per-run context reload</td></tr>
+      <tr><td>Bin5 steady-state execute</td><td class="measured">~539 ms</td><td>30-iter average, burst clocks, [1,512,2560] input</td></tr>
+      <tr><td>Bin5 total (runtime overhead)</td><td class="measured">~565 ms</td><td>30-iter, burst</td></tr>
+      <tr><td>Bin5 inf/s</td><td class="measured">1.77 inf/s</td><td>Steady-state, 30 iterations</td></tr>
+      <tr><td>Context binary load</td><td class="measured">~224 ms</td><td>One-time per session (RPC load)</td></tr>
+      <tr><td>Bin2 chunk</td><td class="measured">3.39 s</td><td>Includes per-run reload overhead</td></tr>
+      <tr><td>Bin3 chunk</td><td class="measured">3.16 s</td><td>Includes per-run reload overhead</td></tr>
+      <tr><td>Bin4 chunk</td><td class="measured">2.87 s</td><td>Includes per-run reload overhead</td></tr>
+    </tbody>
+  </table>
+
+  <div class="warn-box">
+    <strong>Honest caveat:</strong> Each qnn-net-run reloads context binary per run — this inflates per-chunk times.
+    A persistent-context chained runner (all 5 loaded once, activations piped) is the production deployment path.
+    Decode throughput (1 tok/step, [1,1,2560] shape) is not yet measured; it will be ~512× cheaper on lm_head.
+  </div>
+
+  <div class="rule"></div>
+
+  <h2>Architecture</h2>
+  <p>Two-graph split, never rejoined at inference:</p>
+
+  <details open>
+    <summary>Language Model (W8A16 · Hexagon NPU)</summary>
+    <div class="db">
+      <ul style="padding-left:16px">
+        <li>32 layers, hidden_size=2560, vocab=248,320</li>
+        <li>Split into 5 ONNX chunks → 5 HTP context binaries</li>
+        <li>INT8 weights, FP16 activations</li>
+        <li>W8A16 encoding patch covers all 4 self-attention MatMul inputs per layer</li>
+        <li>Chunks gate-passed: FP32 bit-exact (constant-fold via onnxslim)</li>
+      </ul>
+    </div>
+  </details>
+
+  <details open>
+    <summary>Vision Tower (FP16 · Adreno GPU)</summary>
+    <div class="db">
+      <ul style="padding-left:16px">
+        <li>FP16, not quantized — intentional (8-bit introduces noisy embeddings)</li>
+        <li>Frozen during SFT training</li>
+        <li>Communicates with LM via projected embeddings at <span class="mono">&lt;|vision_start|&gt;..&lt;|vision_end|&gt;</span> slots</li>
+        <li>Runs on Adreno GPU for continuous monitoring use cases</li>
+      </ul>
+    </div>
+  </details>
+
+  <div class="rule"></div>
+
+  <h2>Proven Environment (Blackwell sm_120)</h2>
+  <p><strong style="color:var(--teal)">Achievement:</strong> causal-conv1d 1.6.2.post1 proven on Blackwell sm_120 / CUDA 13 — this package has historically failed on new CUDA architectures.</p>
+
+  <details>
+    <summary>Key version pins</summary>
+    <div class="db">
+      <pre style="background:rgba(255,255,255,.04);padding:14px;border-radius:9px;font-size:.82rem;overflow-x:auto;font-family:'SF Mono',Menlo,Consolas,monospace">causal-conv1d==1.6.2.post1
+torch==2.12.0
+transformers==5.5.0
+triton==3.7.0
+unsloth @ git+https://github.com/unslothai/unsloth.git@015fa5772a86938f0d9a546ca1dd36d956f028a4
+unsloth_zoo==2026.5.4
+torchao==0.17.0
+datasets==4.3.0
+accelerate==1.13.0</pre>
+      <p style="margin-top:8px">Full 139-package lockfile available with model access.</p>
+    </div>
+  </details>
+
+  <div class="rule"></div>
+
+  <h2>Intended Use</h2>
+  <p>On-device multimodal reasoning on Snapdragon 8 Gen 3 devices. Target applications: continuous visual monitoring, on-device reasoning without cloud dependency, privacy-sensitive inference tasks.</p>
+
+  <h2>Limitations</h2>
+  <ul style="color:var(--dim);font-size:.9rem;padding-left:18px;line-height:1.9">
+    <li>Optimized for SM8650 (Snapdragon 8 Gen 3) — HTP context binaries are device-specific.</li>
+    <li>Prefill benchmark is the measured value; decode throughput pending a decode-shaped graph compile.</li>
+    <li>Per-run context reload overhead present in current benchmarks — persistent-context runner will improve end-to-end latency.</li>
+    <li>Vision tower fine-tuning not included in current SFT (text-only data, tower frozen).</li>
+  </ul>
+
+  <div class="rule"></div>
+
+  <h2>Access</h2>
+  <div class="gate-box">
+    Weights, distillation scripts, W8A16 quantization pipeline, tower-split compiler, and LANE configs are proprietary and not publicly distributed.
+    The benchmarks above are verifiable on equivalent hardware with licensed artifacts.
+  </div>
+  <p>To request access, email with: intended use case, hardware target, and organization.
+     <a href="https://github.com/levander-little/michelle-vlm/issues/new?title=MICHELLE+Access+Request&body=Use+case%3A%0AHardware+target%3A%0AOrganization%3A" target="_blank" rel="noopener">Open access request on GitHub →</a></p>
+
+  <div class="rule"></div>
+
+  <h2>Citation</h2>
+  <pre style="background:rgba(255,255,255,.04);padding:14px;border-radius:9px;font-size:.82rem;overflow-x:auto;font-family:'SF Mono',Menlo,Consolas,monospace">Little, L. (2026). Michelle-Qwen3.5-4B-W8A16 — Sovereign on-device VLM.
+Measured on Galaxy S24+ SM-S926U1 (Snapdragon 8 Gen 3 / SM8650), 2026-06-10.
+QAIRT 2.45, W8A16 Hexagon HTP, ~54 tok/s prefill.</pre>
+
+</div>
+
+<footer>
+  <div class="wrap" style="padding:0 22px 40px">
+    MICHELLE Sovereign VLM · LeVander Little · 2026 ·
+    Benchmarks measured 2026-06-10 on real Galaxy S24+ silicon.
+  </div>
+</footer>
+</body>
+</html>
