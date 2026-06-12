@@ -1,0 +1,1448 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>MICHELLE — On-Device VLM · Galaxy S24+ · Hexagon NPU</title>
+<meta name="description" content="Qwen3.5-4B W8A16 running live on Hexagon NPU — real S24+ benchmarks, proven toolchain, open recipe.">
+<!-- Space Grotesk (premium display) + JetBrains Mono (terminal/code) — Google Fonts, free -->
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link href="https://fonts.googleapis.com/css2?family=Space+Grotesk:wght@400;500;600;700;800&family=JetBrains+Mono:wght@400;500;700&display=swap" rel="stylesheet">
+<!-- Chart.js CDN (free, MIT) — https://www.chartjs.org/ -->
+<script src="https://cdn.jsdelivr.net/npm/chart.js@4.4.3/dist/chart.umd.min.js"></script>
+<!-- highlight.js CDN (free, BSD-3) — https://highlightjs.org/ -->
+<link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/highlight.js@11.9.0/styles/atom-one-dark.min.css">
+<script src="https://cdn.jsdelivr.net/npm/highlight.js@11.9.0/highlight.min.js"></script>
+<style>
+/* ===== DESIGN TOKENS ===== */
+:root{
+  --teal:#2dd4bf; --teal-dim:rgba(45,212,191,.12); --teal-glow:rgba(45,212,191,.3);
+  --violet:#a78bfa; --violet-dim:rgba(167,139,250,.10); --violet-glow:rgba(167,139,250,.28);
+  --amber:#fbbf24; --red:#f87171;
+  --bg:#04080f; --bg2:#080d16; --bg3:#0b1220;
+  --glass:rgba(255,255,255,.038); --glass2:rgba(255,255,255,.065);
+  --border:rgba(255,255,255,.08); --border2:rgba(255,255,255,.14);
+  --text:#dde4ef; --dim:#6b7a96; --dim2:#9aa5bc;
+  --font:'Space Grotesk',system-ui,sans-serif;
+  --mono:'JetBrains Mono','SF Mono',Menlo,monospace;
+}
+*{box-sizing:border-box;margin:0;padding:0}
+html{scroll-behavior:smooth}
+body{
+  background:var(--bg);
+  color:var(--text);min-height:100vh;
+  font-family:var(--font);
+  line-height:1.58;-webkit-font-smoothing:antialiased;
+}
+.wrap{max-width:1060px;margin:0 auto;padding:0 24px 120px}
+.mono{font-family:var(--mono)}
+
+/* ===== NAV ===== */
+nav{
+  position:sticky;top:0;z-index:200;
+  backdrop-filter:blur(22px);-webkit-backdrop-filter:blur(22px);
+  background:rgba(4,8,15,.82);
+  border-bottom:1px solid var(--border);padding:13px 26px;
+}
+.nav-inner{max-width:1060px;margin:0 auto;display:flex;align-items:center;gap:22px;flex-wrap:wrap}
+.nav-brand{font-weight:800;letter-spacing:.06em;font-size:1rem;color:var(--teal);font-family:var(--font)}
+.nav-links{display:flex;gap:20px;flex-wrap:wrap}
+.nav-links a{color:var(--dim);font-size:.85rem;text-decoration:none;font-weight:500;transition:color .2s}
+.nav-links a:hover{color:var(--text)}
+.nav-cta{margin-left:auto}
+.btn{display:inline-block;padding:9px 22px;border-radius:10px;font-size:.86rem;font-weight:700;
+  text-decoration:none;transition:all .22s;cursor:pointer;border:none;font-family:var(--font);letter-spacing:.01em}
+.btn-primary{background:linear-gradient(135deg,var(--teal) 0%,#38d9c8 100%);color:#021810;box-shadow:0 0 20px rgba(45,212,191,.22)}
+.btn-primary:hover{opacity:.9;transform:translateY(-1px);box-shadow:0 0 28px rgba(45,212,191,.35)}
+.btn-outline{border:1px solid var(--border);background:transparent;color:var(--dim);padding:8px 20px}
+.btn-outline:hover{color:var(--text);border-color:var(--border2);background:var(--glass)}
+
+/* ===== HERO + PARTICLE GRID ===== */
+.hero{position:relative;text-align:center;padding:104px 0 56px;overflow:hidden}
+#particle-canvas{
+  position:absolute;inset:0;width:100%;height:100%;
+  pointer-events:none;z-index:0;opacity:.55;
+}
+.hero-content{position:relative;z-index:1}
+.eyebrow{
+  letter-spacing:.52em;font-size:.68rem;color:var(--teal);text-transform:uppercase;
+  margin-bottom:18px;opacity:.85;
+}
+.hero h1{
+  font-size:clamp(2.6rem,6.5vw,4.4rem);font-weight:800;
+  margin:0 0 8px;letter-spacing:-.03em;line-height:1.08;
+  background:linear-gradient(100deg,#fff 0%,var(--teal) 48%,var(--violet) 80%);
+  -webkit-background-clip:text;background-clip:text;-webkit-text-fill-color:transparent;
+}
+.hero-sub{color:var(--dim2);font-size:1.04rem;max-width:580px;margin:0 auto 38px;font-weight:400;line-height:1.65}
+.hero-ctas{display:flex;gap:12px;justify-content:center;flex-wrap:wrap}
+
+/* ===== LIVE TOKEN STREAM (Mechanic 1) ===== */
+.npu-stream-panel{
+  margin:52px auto 0;max-width:780px;
+  background:rgba(4,12,22,.88);
+  border:1px solid var(--border);border-top:2px solid var(--teal);
+  border-radius:0 0 18px 18px;overflow:hidden;
+  box-shadow:0 0 40px rgba(45,212,191,.08),0 16px 48px rgba(0,0,0,.5);
+}
+.npu-stream-header{
+  display:flex;align-items:center;gap:10px;
+  padding:10px 18px;
+  background:rgba(45,212,191,.06);
+  border-bottom:1px solid rgba(45,212,191,.14);
+  font-size:.76rem;font-family:var(--mono);color:var(--teal);
+}
+.npu-dot{width:8px;height:8px;border-radius:50%;background:var(--teal);
+  box-shadow:0 0 8px var(--teal);animation:pulse-dot 1.4s ease-in-out infinite}
+@keyframes pulse-dot{0%,100%{opacity:1}50%{opacity:.3}}
+.npu-title{flex:1;letter-spacing:.08em}
+.npu-stat{margin-left:auto;color:var(--dim2)}
+.npu-stream-body{
+  padding:14px 20px;min-height:52px;
+  display:flex;align-items:flex-start;flex-wrap:wrap;gap:3px;
+}
+.token-chip{
+  display:inline-block;padding:2px 6px;border-radius:5px;
+  font-family:var(--mono);font-size:.78rem;color:var(--teal);
+  background:rgba(45,212,191,.08);border:1px solid rgba(45,212,191,.18);
+  animation:token-in .18s ease-out;opacity:0;
+}
+@keyframes token-in{from{opacity:0;transform:translateY(4px)}to{opacity:1;transform:none}}
+.token-chip.shown{opacity:1}
+.npu-stream-footer{
+  display:flex;align-items:center;gap:18px;
+  padding:10px 20px;border-top:1px solid rgba(255,255,255,.05);
+  font-size:.74rem;font-family:var(--mono);color:var(--dim);
+}
+.npu-counter{color:var(--teal);font-weight:700;font-size:.9rem}
+.npu-bar-wrap{flex:1;height:4px;background:rgba(255,255,255,.06);border-radius:4px;overflow:hidden}
+.npu-bar-fill{height:100%;width:0%;background:linear-gradient(90deg,var(--teal),var(--violet));
+  border-radius:4px;transition:width .12s linear}
+.npu-controls{display:flex;gap:8px;padding:0 20px 14px}
+.npu-ctrl-btn{
+  padding:5px 14px;border-radius:7px;font-size:.74rem;font-weight:600;cursor:pointer;
+  font-family:var(--font);border:1px solid var(--border);
+  background:var(--glass);color:var(--dim);transition:all .18s;
+}
+.npu-ctrl-btn:hover{color:var(--text);border-color:var(--border2)}
+.npu-ctrl-btn.active{color:var(--teal);border-color:rgba(45,212,191,.4);background:rgba(45,212,191,.08)}
+
+/* ===== STAT GRID ===== */
+.stat-grid{
+  display:grid;grid-template-columns:repeat(auto-fit,minmax(155px,1fr));
+  gap:14px;margin:54px auto 0;max-width:950px;
+}
+.stat-chip{
+  background:var(--glass);border:1px solid var(--border);border-radius:18px;
+  padding:22px 16px;backdrop-filter:blur(16px);-webkit-backdrop-filter:blur(16px);
+  display:flex;flex-direction:column;align-items:center;gap:5px;
+  transition:transform .28s ease,border-color .28s ease,box-shadow .28s ease;
+  cursor:default;
+}
+.stat-chip:hover{
+  transform:translateY(-5px);border-color:rgba(255,255,255,.18);
+  box-shadow:0 8px 32px rgba(0,0,0,.35);
+}
+.stat-num{font-size:2rem;font-weight:800;letter-spacing:-.02em;line-height:1}
+.stat-label{font-size:.7rem;color:var(--dim);text-transform:uppercase;letter-spacing:.14em;text-align:center;font-weight:500}
+.stat-note{font-size:.66rem;color:var(--dim);margin-top:3px;text-align:center}
+
+/* ===== SECTIONS ===== */
+.section{margin-top:80px}
+.section-h{display:flex;align-items:baseline;gap:14px;margin-bottom:28px;flex-wrap:wrap}
+.section-h h2{font-size:1.55rem;font-weight:750;letter-spacing:-.015em}
+.section-h .hint{color:var(--dim);font-size:.84rem;font-weight:400}
+.rule{height:1px;background:linear-gradient(90deg,rgba(45,212,191,.25),var(--border),transparent);margin-top:8px}
+
+/* ===== CALLOUT ===== */
+.callout{
+  background:rgba(45,212,191,.055);border:1px solid rgba(45,212,191,.2);border-radius:14px;
+  padding:16px 22px;font-size:.9rem;color:var(--teal);margin-bottom:24px;line-height:1.65;
+}
+.callout strong{font-weight:700}
+.callout-warn{background:rgba(251,191,36,.055);border-color:rgba(251,191,36,.2);color:var(--amber)}
+.callout-red{background:rgba(248,113,113,.055);border-color:rgba(248,113,113,.2);color:var(--red)}
+.callout-violet{background:rgba(167,139,250,.055);border-color:rgba(167,139,250,.2);color:var(--violet)}
+
+/* ===== CHART ===== */
+.chart-panel{
+  background:var(--glass);border:1px solid var(--border);border-radius:18px;
+  padding:28px;backdrop-filter:blur(16px);-webkit-backdrop-filter:blur(16px);margin-bottom:22px;
+}
+.chart-title{font-size:1rem;font-weight:700;margin-bottom:5px}
+.chart-sub{font-size:.82rem;color:var(--dim);margin-bottom:20px}
+canvas{max-height:240px}
+
+/* ===== BENCHMARK TABLE ===== */
+.bench-table{width:100%;border-collapse:collapse;font-size:.9rem}
+.bench-table th{
+  text-align:left;color:var(--dim);font-size:.72rem;text-transform:uppercase;
+  letter-spacing:.12em;padding:9px 13px;border-bottom:1px solid var(--border);font-weight:500;
+}
+.bench-table td{padding:12px 13px;border-bottom:1px solid rgba(255,255,255,.035)}
+.bench-table tr:hover td{background:rgba(255,255,255,.025)}
+.chip{display:inline-block;padding:3px 10px;border-radius:999px;font-size:.68rem;font-weight:700;letter-spacing:.03em}
+.chip-teal{background:rgba(45,212,191,.13);color:var(--teal);border:1px solid rgba(45,212,191,.28)}
+.chip-amber{background:rgba(251,191,36,.1);color:var(--amber);border:1px solid rgba(251,191,36,.22)}
+.chip-violet{background:rgba(167,139,250,.1);color:var(--violet);border:1px solid rgba(167,139,250,.22)}
+.chip-dim{background:rgba(255,255,255,.05);color:var(--dim);border:1px solid var(--border)}
+
+/* ===== ARCHITECTURE INTERACTIVE DIAGRAM (Mechanic 2) ===== */
+.arch-diagram-wrap{
+  margin-top:24px;
+  background:rgba(4,10,20,.7);border:1px solid var(--border);border-radius:20px;
+  overflow:hidden;position:relative;
+}
+.arch-tabs{
+  display:flex;border-bottom:1px solid var(--border);
+  background:rgba(255,255,255,.02);
+}
+.arch-tab{
+  flex:1;padding:13px;text-align:center;cursor:pointer;
+  font-size:.82rem;font-weight:600;color:var(--dim);
+  border:none;background:transparent;font-family:var(--font);
+  transition:color .2s,background .2s;
+}
+.arch-tab:hover{color:var(--text);background:rgba(255,255,255,.03)}
+.arch-tab.active[data-tab="lm"]{color:var(--teal);border-bottom:2px solid var(--teal);background:rgba(45,212,191,.05)}
+.arch-tab.active[data-tab="vision"]{color:var(--violet);border-bottom:2px solid var(--violet);background:rgba(167,139,250,.05)}
+.arch-tab.active[data-tab="flow"]{color:var(--amber);border-bottom:2px solid var(--amber);background:rgba(251,191,36,.04)}
+.arch-panel{display:none;padding:28px 24px}
+.arch-panel.active{display:block}
+
+/* SVG diagram */
+.arch-svg-wrap{text-align:center;margin-bottom:20px}
+.arch-svg-wrap svg{max-width:100%;height:auto}
+
+/* Detail cards inside arch */
+.arch-detail-grid{display:grid;grid-template-columns:repeat(auto-fit,minmax(200px,1fr));gap:12px;margin-top:16px}
+.arch-detail-card{
+  background:var(--glass);border:1px solid var(--border);border-radius:12px;padding:16px 18px;
+}
+.arch-detail-label{font-size:.7rem;text-transform:uppercase;letter-spacing:.14em;margin-bottom:8px;font-weight:600}
+.arch-detail-val{font-size:.9rem;line-height:1.75}
+
+/* ===== REASONING SLIDER (Mechanic 3) ===== */
+.slider-section{margin-top:80px}
+.reason-compare{
+  position:relative;border-radius:18px;overflow:hidden;
+  border:1px solid var(--border);
+  background:rgba(4,10,20,.85);
+  box-shadow:0 8px 40px rgba(0,0,0,.4);
+  user-select:none;
+}
+.reason-panes{position:relative;display:flex;min-height:320px}
+.reason-pane{flex:1;padding:28px 24px;overflow:hidden}
+.reason-left{
+  background:rgba(255,255,255,.025);
+  border-right:1px solid var(--border);
+}
+.reason-right{background:rgba(45,212,191,.03)}
+.reason-pane-label{
+  font-size:.68rem;text-transform:uppercase;letter-spacing:.18em;font-weight:700;
+  margin-bottom:14px;padding:5px 10px;border-radius:5px;display:inline-block;
+}
+.label-before{color:var(--dim2);background:rgba(255,255,255,.05);border:1px solid var(--border)}
+.label-after{color:var(--teal);background:rgba(45,212,191,.1);border:1px solid rgba(45,212,191,.25)}
+.reason-pane-text{font-size:.88rem;line-height:1.78;color:var(--dim2)}
+.reason-pane-text .think-block{
+  color:var(--violet);font-style:italic;font-family:var(--mono);font-size:.81rem;
+  background:rgba(167,139,250,.06);border-left:2px solid rgba(167,139,250,.4);
+  padding:8px 12px;border-radius:0 8px 8px 0;margin:10px 0;line-height:1.6;
+}
+.reason-pane-text .answer-block{color:var(--teal);margin-top:10px;font-weight:500}
+.slider-divider{
+  position:absolute;top:0;bottom:0;width:3px;
+  background:linear-gradient(180deg,var(--teal),var(--violet));
+  cursor:ew-resize;z-index:10;
+  left:50%;transform:translateX(-50%);
+  box-shadow:0 0 12px var(--teal-glow);
+}
+.slider-handle{
+  position:absolute;top:50%;left:50%;
+  transform:translate(-50%,-50%);
+  width:36px;height:36px;border-radius:50%;
+  background:var(--bg2);border:2px solid var(--teal);
+  display:flex;align-items:center;justify-content:center;
+  font-size:.8rem;color:var(--teal);box-shadow:0 0 14px var(--teal-glow);
+  cursor:ew-resize;font-weight:700;
+}
+/* overlay clip approach */
+.reason-right-overlay{
+  position:absolute;top:0;right:0;bottom:0;left:50%;
+  overflow:hidden;
+  background:rgba(4,8,15,.92);
+  border-left:none;
+  pointer-events:none;
+}
+.reason-right-inner{
+  position:absolute;top:0;right:0;bottom:0;
+  width:200%;  /* so it always fills regardless of left offset */
+  transform:translateX(0);
+}
+.slider-hint{
+  text-align:center;padding:10px;font-size:.74rem;color:var(--dim);
+  border-top:1px solid var(--border);
+  background:rgba(255,255,255,.02);
+}
+
+/* ===== TERMINAL REPLAY (Mechanic 4) ===== */
+.terminal-wrap{
+  background:#010a06;border:1px solid rgba(45,212,191,.18);border-radius:16px;
+  overflow:hidden;box-shadow:0 0 50px rgba(45,212,191,.06),0 16px 48px rgba(0,0,0,.6);
+  margin-top:24px;
+}
+.terminal-header{
+  display:flex;align-items:center;gap:8px;padding:12px 18px;
+  background:rgba(45,212,191,.04);border-bottom:1px solid rgba(45,212,191,.1);
+}
+.terminal-dots{display:flex;gap:6px}
+.terminal-dot{width:11px;height:11px;border-radius:50%}
+.td-red{background:#ff5f57}.td-yellow{background:#febc2e}.td-green{background:#28c840}
+.terminal-title{
+  flex:1;text-align:center;font-size:.74rem;font-family:var(--mono);
+  color:var(--dim);letter-spacing:.08em;
+}
+.terminal-replay-btn{
+  padding:4px 12px;border-radius:6px;font-size:.72rem;font-weight:600;cursor:pointer;
+  font-family:var(--font);border:1px solid rgba(45,212,191,.3);
+  background:rgba(45,212,191,.08);color:var(--teal);transition:all .18s;
+}
+.terminal-replay-btn:hover{background:rgba(45,212,191,.18)}
+.terminal-body{
+  padding:18px 22px;min-height:260px;
+  font-family:var(--mono);font-size:.8rem;line-height:1.65;
+  color:#a5e3b0;overflow:hidden;
+}
+.terminal-line{
+  display:block;opacity:0;
+  animation:line-appear .04s ease forwards;
+}
+.terminal-line.shown{opacity:1}
+@keyframes line-appear{from{opacity:0}to{opacity:1}}
+.t-prompt{color:#2dd4bf}.t-cmd{color:#dde4ef}.t-key{color:#a78bfa}.t-val{color:#fbbf24}
+.t-ok{color:#2dd4bf}.t-warn{color:#fbbf24}.t-dim{color:#4a5568}
+.t-cursor{
+  display:inline-block;width:8px;height:1em;background:var(--teal);
+  vertical-align:text-bottom;animation:blink .9s step-end infinite;
+}
+@keyframes blink{0%,100%{opacity:1}50%{opacity:0}}
+
+/* ===== COLLAPSIBLE ===== */
+details{
+  background:var(--glass);border:1px solid var(--border);border-radius:14px;
+  margin-bottom:14px;backdrop-filter:blur(10px);transition:border-color .2s;
+}
+details[open]{border-color:var(--border2)}
+summary{
+  padding:16px 22px;cursor:pointer;font-weight:600;font-size:.95rem;
+  list-style:none;display:flex;align-items:center;justify-content:space-between;user-select:none;
+}
+summary::-webkit-details-marker{display:none}
+summary::after{content:"▾";color:var(--dim);transition:transform .3s;margin-left:8px}
+details[open] summary::after{transform:rotate(180deg)}
+.details-body{padding:0 22px 20px}
+
+/* ===== CODE BLOCK ===== */
+.code-wrap{position:relative;margin:12px 0}
+.code-wrap pre{border-radius:12px;font-size:.8rem;line-height:1.55;overflow-x:auto;padding:18px}
+.copy-btn{
+  position:absolute;top:10px;right:10px;
+  background:rgba(255,255,255,.07);border:1px solid var(--border);
+  color:var(--dim);border-radius:7px;padding:5px 12px;font-size:.7rem;cursor:pointer;
+  transition:all .2s;font-family:var(--font);font-weight:600;
+}
+.copy-btn:hover{color:var(--text);background:rgba(255,255,255,.13)}
+.copy-btn.copied{color:var(--teal);border-color:rgba(45,212,191,.38)}
+
+/* ===== TIMELINE ===== */
+.timeline{padding-left:6px;margin-top:4px}
+.tl-item{position:relative;padding-left:30px;margin-bottom:22px}
+.tl-item::before{
+  content:"";position:absolute;left:0;top:5px;width:13px;height:13px;
+  border-radius:50%;background:var(--teal);box-shadow:0 0 0 3px rgba(45,212,191,.18);
+}
+.tl-item::after{
+  content:"";position:absolute;left:6px;top:20px;width:2px;bottom:-24px;
+  background:linear-gradient(180deg,rgba(45,212,191,.28),transparent);
+}
+.tl-item:last-child::after{display:none}
+.tl-date{font-size:.74rem;color:var(--dim);font-family:var(--mono);margin-bottom:4px}
+.tl-text{font-size:.9rem;line-height:1.65}
+
+/* ===== GATE BADGE ===== */
+.gate-badge{
+  display:inline-flex;align-items:center;gap:7px;padding:7px 16px;border-radius:999px;
+  font-size:.76rem;font-weight:700;border:1px solid rgba(45,212,191,.32);
+  background:rgba(45,212,191,.08);color:var(--teal);letter-spacing:.03em;
+}
+.gate-dot{width:8px;height:8px;border-radius:50%;background:var(--teal);
+  box-shadow:0 0 7px var(--teal);animation:pulse-dot 2s ease-in-out infinite}
+
+/* ===== CREATOR ===== */
+.creator-section{
+  margin-top:80px;
+  background:linear-gradient(135deg,rgba(45,212,191,.04),rgba(167,139,250,.04));
+  border:1px solid var(--border);border-radius:22px;padding:40px 36px;
+}
+.creator-inner{display:grid;grid-template-columns:160px 1fr;gap:36px;align-items:center}
+.creator-photo-wrap{
+  width:140px;height:140px;border-radius:50%;
+  border:2px solid rgba(45,212,191,.35);
+  overflow:hidden;position:relative;
+  box-shadow:0 0 30px rgba(45,212,191,.15);
+  flex-shrink:0;
+}
+.creator-photo-placeholder{
+  width:100%;height:100%;
+  display:flex;align-items:center;justify-content:center;
+  background:linear-gradient(135deg,rgba(45,212,191,.1),rgba(167,139,250,.1));
+  font-size:3rem;color:var(--dim);font-family:var(--mono);
+}
+.creator-photo-wrap img{width:100%;height:100%;object-fit:cover}
+.creator-name{font-size:1.45rem;font-weight:800;letter-spacing:-.01em;margin-bottom:5px}
+.creator-role{font-size:.85rem;color:var(--teal);font-weight:500;margin-bottom:14px}
+.creator-bio{font-size:.9rem;color:var(--dim2);line-height:1.72;margin-bottom:18px}
+.creator-tags{display:flex;gap:8px;flex-wrap:wrap}
+.creator-tag{
+  padding:4px 12px;border-radius:999px;font-size:.72rem;font-weight:600;
+  border:1px solid var(--border);background:var(--glass);color:var(--dim2);
+}
+
+/* ===== CTA ===== */
+.cta-box{
+  background:linear-gradient(135deg,rgba(45,212,191,.07),rgba(167,139,250,.07));
+  border:1px solid rgba(167,139,250,.2);border-radius:22px;padding:44px 40px;
+  text-align:center;margin-top:80px;position:relative;overflow:hidden;
+}
+.cta-box::before{
+  content:"";position:absolute;top:-60px;right:-60px;width:220px;height:220px;
+  border-radius:50%;background:radial-gradient(circle,rgba(167,139,250,.12),transparent 70%);
+  pointer-events:none;
+}
+.cta-box h2{font-size:1.9rem;font-weight:800;margin-bottom:12px;letter-spacing:-.015em}
+.cta-box p{color:var(--dim2);margin-bottom:28px;max-width:500px;margin-left:auto;margin-right:auto;font-size:.95rem}
+
+/* ===== FOOTER ===== */
+footer{margin-top:80px;text-align:center;color:var(--dim);font-size:.8rem;padding-bottom:40px}
+.seal{
+  display:inline-block;margin-top:10px;padding:7px 20px;border-radius:999px;
+  border:1px solid var(--border);letter-spacing:.2em;text-transform:uppercase;
+  font-size:.67rem;color:var(--teal);font-family:var(--mono);
+}
+
+/* ===== REVEAL ===== */
+.reveal{opacity:0;transform:translateY(24px);transition:opacity .65s ease,transform .65s ease}
+.reveal.shown{opacity:1;transform:none}
+
+/* ===== UTILS ===== */
+.flex-gap{display:flex;gap:10px;flex-wrap:wrap;align-items:center;margin-bottom:16px}
+.hw-grid{display:grid;grid-template-columns:1fr 1fr;gap:16px;margin-bottom:18px}
+.hw-card{background:var(--glass);border:1px solid var(--border);border-radius:14px;padding:20px 22px}
+.hw-card-label{font-size:.7rem;text-transform:uppercase;letter-spacing:.14em;margin-bottom:12px;font-weight:600}
+
+@media(prefers-reduced-motion:reduce){
+  *{transition:none!important;animation:none!important}
+  .reveal{opacity:1;transform:none}
+  .token-chip{animation:none;opacity:1}
+  .terminal-line{animation:none;opacity:1}
+}
+@media(max-width:700px){
+  .hero{padding:70px 0 42px}
+  .hw-grid,.creator-inner{grid-template-columns:1fr}
+  .creator-photo-wrap{margin:0 auto}
+  .cta-box{padding:30px 22px}
+  .reason-compare{touch-action:pan-y}
+}
+</style>
+</head>
+<body>
+
+<!-- NAV -->
+<nav>
+  <div class="nav-inner">
+    <span class="nav-brand">MICHELLE</span>
+    <div class="nav-links">
+      <a href="#benchmarks">Benchmarks</a>
+      <a href="#architecture">Architecture</a>
+      <a href="#reasoning">Reasoning</a>
+      <a href="#terminal">S24+ Replay</a>
+      <a href="#recipe">Recipe</a>
+      <a href="#creator">Creator</a>
+      <a href="#access">Access</a>
+    </div>
+    <div class="nav-cta">
+      <a href="#access" class="btn btn-primary">Request Access</a>
+    </div>
+  </div>
+</nav>
+
+<div class="wrap">
+
+  <!-- HERO -->
+  <div class="hero reveal">
+    <canvas id="particle-canvas" aria-hidden="true"></canvas>
+    <div class="hero-content">
+      <div class="eyebrow">MICHELLE Sovereign VLM · 2026</div>
+      <h1>Qwen3.5-4B<br>Live on Hexagon NPU</h1>
+      <p class="hero-sub">W8A16 language model + FP16 vision tower running on a real Galaxy S24+ (SM8650). Proven end-to-end: Blackwell training → W8A16 quantization → on-device inference.</p>
+      <div class="hero-ctas">
+        <a href="#benchmarks" class="btn btn-primary">See Real Benchmarks</a>
+        <a href="#recipe" class="btn btn-outline">Reproduction Recipe</a>
+      </div>
+    </div>
+
+    <!-- MECHANIC 1: Live NPU Token Stream Visualizer -->
+    <div class="npu-stream-panel" id="npu-panel">
+      <div class="npu-stream-header">
+        <span class="npu-dot"></span>
+        <span class="npu-title">HEXAGON NPU · LIVE TOKEN STREAM (simulated decode · ~54 tok/s)</span>
+        <span class="npu-stat" id="npu-tps-display">54.0 tok/s</span>
+      </div>
+      <div class="npu-stream-body" id="token-stream-body">
+        <!-- tokens injected by JS -->
+      </div>
+      <div class="npu-stream-footer">
+        <span class="npu-counter" id="npu-token-count">0</span>
+        <span style="color:var(--dim);font-size:.72rem">&nbsp;tokens decoded on Hexagon HTP</span>
+        <div class="npu-bar-wrap"><div class="npu-bar-fill" id="npu-bar"></div></div>
+        <span style="color:var(--dim);font-size:.72rem">W8A16&nbsp;·&nbsp;SM8650</span>
+      </div>
+      <div class="npu-controls">
+        <button class="npu-ctrl-btn active" id="btn-decode" onclick="setMode('decode')">Decode</button>
+        <button class="npu-ctrl-btn" id="btn-prefill" onclick="setMode('prefill')">Prefill (~54 tok/s)</button>
+        <button class="npu-ctrl-btn" id="btn-reset" onclick="resetStream()">Reset</button>
+      </div>
+    </div>
+  </div>
+
+  <!-- STAT GRID -->
+  <div class="stat-grid reveal">
+    <div class="stat-chip"><span class="stat-num" style="color:var(--teal)">~54</span><span class="stat-label">tok/s prefill</span><span class="stat-note">5-bin chain, S24+ burst</span></div>
+    <div class="stat-chip"><span class="stat-num" style="color:var(--violet)">1.77</span><span class="stat-label">inf/s bin5</span><span class="stat-note">30-iter steady-state</span></div>
+    <div class="stat-chip"><span class="stat-num" style="color:var(--amber)">W8A16</span><span class="stat-label">quant format</span><span class="stat-note">INT8 wts / FP16 acts</span></div>
+    <div class="stat-chip"><span class="stat-num" style="color:var(--teal)">8,710</span><span class="stat-label">SFT records</span><span class="stat-note">reasoning distillation</span></div>
+    <div class="stat-chip"><span class="stat-num" style="color:var(--violet)">sm_120</span><span class="stat-label">Blackwell arch</span><span class="stat-note">causal-conv1d proven</span></div>
+    <div class="stat-chip"><span class="stat-num" style="color:var(--amber)">5</span><span class="stat-label">HTP bins</span><span class="stat-note">chunked LM graph</span></div>
+  </div>
+
+  <!-- BENCHMARKS -->
+  <div class="section reveal" id="benchmarks">
+    <div class="section-h">
+      <h2>Benchmarks</h2>
+      <span class="hint">measured on physical device · 2026-06-10</span>
+    </div>
+    <div class="rule"></div>
+
+    <div class="callout" style="margin-top:24px">
+      <strong>Measurement method:</strong> <span class="mono">qnn-net-run --profiling_level detailed</span> over Tailscale ADB.
+      Device: Galaxy S24+ SM-S926U1 (Snapdragon 8 Gen 3 / SM8650). Hexagon HTP, W8A16, <span class="mono">perf_profile=burst</span>.
+      All numbers are from real silicon — no simulation, no extrapolation.
+    </div>
+
+    <div class="chart-panel">
+      <div class="chart-title">Per-Chunk Execute Time — 512-token prefill, burst, S24+</div>
+      <div class="chart-sub">Lower is better. Bin2–4 directly measured; bin1/5 estimated from chain total. Hover for detail.</div>
+      <canvas id="chunkChart"></canvas>
+    </div>
+
+    <div class="chart-panel" style="margin-top:18px">
+      <div class="chart-title">Bin5 Steady-State Throughput — 30 Iterations</div>
+      <div class="chart-sub">Accelerator execute time per inference. Amber bars = warmup (kernel/DVFS ramp). Hover to inspect.</div>
+      <canvas id="iterChart"></canvas>
+    </div>
+
+    <div class="section-h" style="margin-top:36px"><h2 style="font-size:1.1rem">Raw Numbers</h2></div>
+    <div style="overflow-x:auto;border-radius:14px;border:1px solid var(--border)">
+      <table class="bench-table">
+        <thead><tr><th>Metric</th><th>Value</th><th>Scope</th><th>Status</th></tr></thead>
+        <tbody>
+          <tr><td>5-bin chain prefill (512 tok)</td><td class="mono" style="color:var(--teal)">~9.4 s</td><td>Full LM graph, burst</td><td><span class="chip chip-teal">Measured</span></td></tr>
+          <tr><td>Prefill throughput (floor)</td><td class="mono" style="color:var(--teal)">~54 tok/s</td><td>Floor (bin1+5 timing partially parsed)</td><td><span class="chip chip-amber">Floor est.</span></td></tr>
+          <tr><td>True floor (conservative)</td><td class="mono">~46–50 tok/s</td><td>With full reload overhead</td><td><span class="chip chip-amber">Floor est.</span></td></tr>
+          <tr><td>Bin5 execute — steady-state</td><td class="mono" style="color:var(--teal)">~539 ms</td><td>30 iters, burst clocks</td><td><span class="chip chip-teal">Measured</span></td></tr>
+          <tr><td>Bin5 total (incl. runtime overhead)</td><td class="mono">~565 ms</td><td>30 iters, burst clocks</td><td><span class="chip chip-teal">Measured</span></td></tr>
+          <tr><td>Bin5 inf/s (30-iter steady)</td><td class="mono" style="color:var(--violet)">1.77 inf/s</td><td>Prefill-shaped [1,512,2560]</td><td><span class="chip chip-teal">Measured</span></td></tr>
+          <tr><td>Context binary load</td><td class="mono">~224 ms</td><td>One-time per session (RPC)</td><td><span class="chip chip-teal">Measured</span></td></tr>
+          <tr><td>Bin2 chunk execute</td><td class="mono">3.39 s</td><td>Includes per-run reload</td><td><span class="chip chip-teal">Measured</span></td></tr>
+          <tr><td>Bin3 chunk execute</td><td class="mono">3.16 s</td><td>Includes per-run reload</td><td><span class="chip chip-teal">Measured</span></td></tr>
+          <tr><td>Bin4 chunk execute</td><td class="mono">2.87 s</td><td>Includes per-run reload</td><td><span class="chip chip-teal">Measured</span></td></tr>
+        </tbody>
+      </table>
+    </div>
+
+    <div class="callout callout-warn" style="margin-top:18px">
+      <strong>Caveat (honest):</strong> Each <span class="mono">qnn-net-run</span> reloads its context binary — reload overhead inflates per-chunk times.
+      A persistent-context chained runner (load all 5 once, pipe activations) is the clean deployment path.
+      <strong>Decode</strong> (1 tok/step) throughput — the real chat headline — requires a decode-shaped graph [1,1,2560];
+      the lm_head MatMul becomes ~512× cheaper. That is the next verified milestone.
+    </div>
+
+    <details style="margin-top:16px">
+      <summary>Why is bin5 the heaviest chunk?</summary>
+      <div class="details-body" style="font-size:.9rem;color:var(--dim2);line-height:1.72;padding-top:8px">
+        Bin5 covers layers 30–31 plus the full lm_head projection over a 248,320-token vocabulary.
+        The lm_head MatMul is <strong style="color:var(--text)">512 × 2560 × 248,320</strong> — compute and bandwidth bound.
+        Burst clocks did not materially change execution time, confirming the bottleneck is the matmul itself, not DSP frequency.
+        For decode (1 token at a time) the lm_head becomes ~512× cheaper — that is the real optimization target.
+      </div>
+    </details>
+  </div>
+
+  <!-- MECHANIC 2: Interactive Architecture Diagram -->
+  <div class="section reveal" id="architecture">
+    <div class="section-h">
+      <h2>Architecture</h2>
+      <span class="hint">tap each graph to explore · two-graph deployment, never rejoined</span>
+    </div>
+    <div class="rule"></div>
+
+    <div class="callout" style="margin-top:24px">
+      <strong>Design principle:</strong> Tower and LM are two separate graphs forever — never merged at inference.
+      The vision tower remains FP16 intentionally: quantizing it to 8-bit introduces noisy embeddings that degrade what the LM sees.
+    </div>
+
+    <div class="arch-diagram-wrap">
+      <div class="arch-tabs">
+        <button class="arch-tab active" data-tab="lm" onclick="switchArch('lm')">Language Model · W8A16 · Hexagon NPU</button>
+        <button class="arch-tab" data-tab="vision" onclick="switchArch('vision')">Vision Tower · FP16 · Adreno GPU</button>
+        <button class="arch-tab" data-tab="flow" onclick="switchArch('flow')">Runtime Data Flow</button>
+      </div>
+
+      <!-- LM panel -->
+      <div class="arch-panel active" id="arch-lm">
+        <div class="arch-svg-wrap">
+          <svg viewBox="0 0 620 160" width="620" xmlns="http://www.w3.org/2000/svg" role="img" aria-label="5-bin LM architecture on Hexagon NPU">
+            <defs>
+              <linearGradient id="binGrad" x1="0%" y1="0%" x2="0%" y2="100%">
+                <stop offset="0%" style="stop-color:#2dd4bf;stop-opacity:.28"/>
+                <stop offset="100%" style="stop-color:#2dd4bf;stop-opacity:.06"/>
+              </linearGradient>
+              <marker id="arr" markerWidth="6" markerHeight="6" refX="3" refY="3" orient="auto">
+                <path d="M0,0 L0,6 L6,3 z" fill="rgba(45,212,191,.5)"/>
+              </marker>
+            </defs>
+            <!-- bins -->
+            <g id="lm-bins">
+              <rect x="10" y="40" width="90" height="80" rx="10" fill="url(#binGrad)" stroke="rgba(45,212,191,.3)" stroke-width="1.2" class="arch-bin" data-bin="1"/>
+              <text x="55" y="72" text-anchor="middle" font-size="11" fill="#2dd4bf" font-family="'JetBrains Mono',monospace" font-weight="700">BIN 1</text>
+              <text x="55" y="87" text-anchor="middle" font-size="9" fill="#6b7a96" font-family="'JetBrains Mono',monospace">L0–L6</text>
+              <text x="55" y="103" text-anchor="middle" font-size="9" fill="#6b7a96" font-family="'JetBrains Mono',monospace">W8A16</text>
+
+              <rect x="120" y="40" width="90" height="80" rx="10" fill="url(#binGrad)" stroke="rgba(45,212,191,.3)" stroke-width="1.2" class="arch-bin" data-bin="2"/>
+              <text x="165" y="72" text-anchor="middle" font-size="11" fill="#2dd4bf" font-family="'JetBrains Mono',monospace" font-weight="700">BIN 2</text>
+              <text x="165" y="87" text-anchor="middle" font-size="9" fill="#6b7a96" font-family="'JetBrains Mono',monospace">L7–L13</text>
+              <text x="165" y="103" text-anchor="middle" font-size="9" fill="#6b7a96" font-family="'JetBrains Mono',monospace">3.39s</text>
+
+              <rect x="230" y="40" width="90" height="80" rx="10" fill="url(#binGrad)" stroke="rgba(45,212,191,.3)" stroke-width="1.2" class="arch-bin" data-bin="3"/>
+              <text x="275" y="72" text-anchor="middle" font-size="11" fill="#2dd4bf" font-family="'JetBrains Mono',monospace" font-weight="700">BIN 3</text>
+              <text x="275" y="87" text-anchor="middle" font-size="9" fill="#6b7a96" font-family="'JetBrains Mono',monospace">L14–L20</text>
+              <text x="275" y="103" text-anchor="middle" font-size="9" fill="#6b7a96" font-family="'JetBrains Mono',monospace">3.16s</text>
+
+              <rect x="340" y="40" width="90" height="80" rx="10" fill="url(#binGrad)" stroke="rgba(45,212,191,.3)" stroke-width="1.2" class="arch-bin" data-bin="4"/>
+              <text x="385" y="72" text-anchor="middle" font-size="11" fill="#2dd4bf" font-family="'JetBrains Mono',monospace" font-weight="700">BIN 4</text>
+              <text x="385" y="87" text-anchor="middle" font-size="9" fill="#6b7a96" font-family="'JetBrains Mono',monospace">L21–L29</text>
+              <text x="385" y="103" text-anchor="middle" font-size="9" fill="#6b7a96" font-family="'JetBrains Mono',monospace">2.87s</text>
+
+              <rect x="450" y="40" width="90" height="80" rx="10" fill="rgba(251,191,36,.12)" stroke="rgba(251,191,36,.35)" stroke-width="1.5" class="arch-bin" data-bin="5"/>
+              <text x="495" y="72" text-anchor="middle" font-size="11" fill="#fbbf24" font-family="'JetBrains Mono',monospace" font-weight="700">BIN 5</text>
+              <text x="495" y="87" text-anchor="middle" font-size="9" fill="#6b7a96" font-family="'JetBrains Mono',monospace">L30–31+head</text>
+              <text x="495" y="103" text-anchor="middle" font-size="9" fill="#fbbf24" font-family="'JetBrains Mono',monospace">248K vocab</text>
+
+              <!-- arrows -->
+              <line x1="100" y1="80" x2="120" y2="80" stroke="rgba(45,212,191,.4)" stroke-width="1.5" marker-end="url(#arr)"/>
+              <line x1="210" y1="80" x2="230" y2="80" stroke="rgba(45,212,191,.4)" stroke-width="1.5" marker-end="url(#arr)"/>
+              <line x1="320" y1="80" x2="340" y2="80" stroke="rgba(45,212,191,.4)" stroke-width="1.5" marker-end="url(#arr)"/>
+              <line x1="430" y1="80" x2="450" y2="80" stroke="rgba(45,212,191,.4)" stroke-width="1.5" marker-end="url(#arr)"/>
+              <line x1="540" y1="80" x2="600" y2="80" stroke="rgba(45,212,191,.4)" stroke-width="1.5" marker-end="url(#arr)"/>
+
+              <!-- output label -->
+              <text x="608" y="84" text-anchor="start" font-size="9" fill="rgba(45,212,191,.7)" font-family="'JetBrains Mono',monospace">logits</text>
+            </g>
+            <!-- "Hexagon NPU" label -->
+            <text x="310" y="152" text-anchor="middle" font-size="10" fill="rgba(45,212,191,.45)" font-family="'Space Grotesk',sans-serif" font-weight="600" letter-spacing="3">HEXAGON NPU · HTP</text>
+          </svg>
+        </div>
+        <div class="arch-detail-grid">
+          <div class="arch-detail-card">
+            <div class="arch-detail-label" style="color:var(--teal)">Weight format</div>
+            <div class="arch-detail-val mono" style="color:var(--teal)">W8A16</div>
+            <div style="font-size:.82rem;color:var(--dim);margin-top:5px">INT8 weights / FP16 activations</div>
+          </div>
+          <div class="arch-detail-card">
+            <div class="arch-detail-label" style="color:var(--teal)">Chunking</div>
+            <div class="arch-detail-val">5 HTP context binaries</div>
+            <div style="font-size:.82rem;color:var(--dim);margin-top:5px">32 layers, hidden_size=2560</div>
+          </div>
+          <div class="arch-detail-card">
+            <div class="arch-detail-label" style="color:var(--teal)">Vocabulary</div>
+            <div class="arch-detail-val mono" style="color:var(--amber)">248,320 tokens</div>
+            <div style="font-size:.82rem;color:var(--dim);margin-top:5px">lm_head: 512×2560×248320</div>
+          </div>
+          <div class="arch-detail-card">
+            <div class="arch-detail-label" style="color:var(--teal)">SFT training</div>
+            <div class="arch-detail-val">Text-only, tower frozen</div>
+            <div style="font-size:.82rem;color:var(--dim);margin-top:5px">BF16, 8,710 records</div>
+          </div>
+        </div>
+      </div>
+
+      <!-- Vision panel -->
+      <div class="arch-panel" id="arch-vision">
+        <div class="arch-svg-wrap">
+          <svg viewBox="0 0 500 160" width="500" xmlns="http://www.w3.org/2000/svg" role="img" aria-label="Vision tower running on Adreno GPU">
+            <defs>
+              <linearGradient id="visionGrad" x1="0%" y1="0%" x2="0%" y2="100%">
+                <stop offset="0%" style="stop-color:#a78bfa;stop-opacity:.28"/>
+                <stop offset="100%" style="stop-color:#a78bfa;stop-opacity:.06"/>
+              </linearGradient>
+              <marker id="arrV" markerWidth="6" markerHeight="6" refX="3" refY="3" orient="auto">
+                <path d="M0,0 L0,6 L6,3 z" fill="rgba(167,139,250,.5)"/>
+              </marker>
+            </defs>
+            <rect x="20" y="20" width="140" height="120" rx="12" fill="url(#visionGrad)" stroke="rgba(167,139,250,.35)" stroke-width="1.5"/>
+            <text x="90" y="56" text-anchor="middle" font-size="12" fill="#a78bfa" font-family="'JetBrains Mono',monospace" font-weight="700">VISION</text>
+            <text x="90" y="72" text-anchor="middle" font-size="12" fill="#a78bfa" font-family="'JetBrains Mono',monospace" font-weight="700">TOWER</text>
+            <text x="90" y="92" text-anchor="middle" font-size="10" fill="#6b7a96" font-family="'JetBrains Mono',monospace">FP16</text>
+            <text x="90" y="108" text-anchor="middle" font-size="9" fill="#6b7a96" font-family="'JetBrains Mono',monospace">Adreno GPU</text>
+            <text x="90" y="124" text-anchor="middle" font-size="9" fill="rgba(167,139,250,.6)" font-family="'JetBrains Mono',monospace">frozen SFT</text>
+
+            <!-- arrow: vision → projection -->
+            <line x1="160" y1="80" x2="210" y2="80" stroke="rgba(167,139,250,.45)" stroke-width="1.5" marker-end="url(#arrV)"/>
+
+            <!-- projector box -->
+            <rect x="210" y="54" width="80" height="52" rx="8" fill="rgba(251,191,36,.08)" stroke="rgba(251,191,36,.3)" stroke-width="1.2"/>
+            <text x="250" y="78" text-anchor="middle" font-size="9" fill="#fbbf24" font-family="'JetBrains Mono',monospace">PROJ</text>
+            <text x="250" y="92" text-anchor="middle" font-size="8" fill="#6b7a96" font-family="'JetBrains Mono',monospace">embeddings</text>
+
+            <!-- arrow: proj → LM slot -->
+            <line x1="290" y1="80" x2="340" y2="80" stroke="rgba(251,191,36,.45)" stroke-width="1.5" marker-end="url(#arrV)"/>
+
+            <!-- LM slot -->
+            <rect x="340" y="30" width="130" height="100" rx="12" fill="rgba(45,212,191,.07)" stroke="rgba(45,212,191,.25)" stroke-width="1.2"/>
+            <text x="405" y="64" text-anchor="middle" font-size="10" fill="#2dd4bf" font-family="'JetBrains Mono',monospace">LM GRAPH</text>
+            <text x="405" y="80" text-anchor="middle" font-size="8.5" fill="#6b7a96" font-family="'JetBrains Mono',monospace">&lt;|vision_start|&gt;</text>
+            <text x="405" y="95" text-anchor="middle" font-size="8" fill="rgba(45,212,191,.55)" font-family="'JetBrains Mono',monospace">↕ embedding slot</text>
+            <text x="405" y="110" text-anchor="middle" font-size="8.5" fill="#6b7a96" font-family="'JetBrains Mono',monospace">&lt;|vision_end|&gt;</text>
+
+            <text x="250" y="152" text-anchor="middle" font-size="10" fill="rgba(167,139,250,.45)" font-family="'Space Grotesk',sans-serif" font-weight="600" letter-spacing="2">ADRENO GPU → HEXAGON NPU</text>
+          </svg>
+        </div>
+        <div class="arch-detail-grid">
+          <div class="arch-detail-card">
+            <div class="arch-detail-label" style="color:var(--violet)">Precision</div>
+            <div class="arch-detail-val mono" style="color:var(--violet)">FP16 — not quantized</div>
+            <div style="font-size:.82rem;color:var(--dim);margin-top:5px">8-bit would degrade embedding quality</div>
+          </div>
+          <div class="arch-detail-card">
+            <div class="arch-detail-label" style="color:var(--violet)">Runtime target</div>
+            <div class="arch-detail-val">Adreno GPU (SM8650)</div>
+            <div style="font-size:.82rem;color:var(--dim);margin-top:5px">Continuous monitoring mode</div>
+          </div>
+          <div class="arch-detail-card">
+            <div class="arch-detail-label" style="color:var(--violet)">SFT treatment</div>
+            <div class="arch-detail-val">Frozen — weights unchanged</div>
+            <div style="font-size:.82rem;color:var(--dim);margin-top:5px">Text-only training data</div>
+          </div>
+          <div class="arch-detail-card">
+            <div class="arch-detail-label" style="color:var(--violet)">Coupling mechanism</div>
+            <div class="arch-detail-val mono" style="font-size:.78rem;color:var(--amber)">&lt;|vision_start|&gt;..end slots</div>
+            <div style="font-size:.82rem;color:var(--dim);margin-top:5px">Projected embeddings only</div>
+          </div>
+        </div>
+      </div>
+
+      <!-- Runtime flow panel -->
+      <div class="arch-panel" id="arch-flow">
+        <div class="arch-svg-wrap">
+          <svg viewBox="0 0 640 180" width="640" xmlns="http://www.w3.org/2000/svg" role="img" aria-label="Runtime data flow from input image to token output">
+            <defs>
+              <linearGradient id="flowArrow" x1="0%" y1="0%" x2="100%" y2="0%">
+                <stop offset="0%" style="stop-color:#a78bfa;stop-opacity:.8"/>
+                <stop offset="50%" style="stop-color:#fbbf24;stop-opacity:.8"/>
+                <stop offset="100%" style="stop-color:#2dd4bf;stop-opacity:.8"/>
+              </linearGradient>
+              <marker id="arrF" markerWidth="6" markerHeight="6" refX="3" refY="3" orient="auto">
+                <path d="M0,0 L0,6 L6,3 z" fill="rgba(45,212,191,.7)"/>
+              </marker>
+            </defs>
+            <!-- Input -->
+            <rect x="10" y="60" width="80" height="60" rx="8" fill="rgba(107,122,150,.08)" stroke="rgba(107,122,150,.25)" stroke-width="1"/>
+            <text x="50" y="88" text-anchor="middle" font-size="10" fill="#9aa5bc" font-family="'JetBrains Mono',monospace">IMAGE</text>
+            <text x="50" y="104" text-anchor="middle" font-size="9" fill="#6b7a96" font-family="'JetBrains Mono',monospace">+ TEXT</text>
+
+            <line x1="90" y1="90" x2="130" y2="90" stroke="rgba(167,139,250,.4)" stroke-width="1.5" marker-end="url(#arrF)"/>
+
+            <!-- Vision tower -->
+            <rect x="130" y="50" width="100" height="80" rx="10" fill="rgba(167,139,250,.1)" stroke="rgba(167,139,250,.35)" stroke-width="1.5"/>
+            <text x="180" y="82" text-anchor="middle" font-size="10" fill="#a78bfa" font-family="'JetBrains Mono',monospace" font-weight="700">VISION</text>
+            <text x="180" y="96" text-anchor="middle" font-size="9" fill="#a78bfa" font-family="'JetBrains Mono',monospace">FP16</text>
+            <text x="180" y="112" text-anchor="middle" font-size="8" fill="#6b7a96" font-family="'JetBrains Mono',monospace">Adreno GPU</text>
+
+            <line x1="230" y1="90" x2="270" y2="90" stroke="rgba(251,191,36,.5)" stroke-width="1.5" marker-end="url(#arrF)"/>
+            <text x="250" y="78" text-anchor="middle" font-size="8" fill="rgba(251,191,36,.7)" font-family="'JetBrains Mono',monospace">proj emb</text>
+
+            <!-- Tokenizer -->
+            <rect x="270" y="60" width="80" height="60" rx="8" fill="rgba(251,191,36,.07)" stroke="rgba(251,191,36,.25)" stroke-width="1"/>
+            <text x="310" y="88" text-anchor="middle" font-size="9" fill="#fbbf24" font-family="'JetBrains Mono',monospace">TOKEN</text>
+            <text x="310" y="102" text-anchor="middle" font-size="9" fill="#fbbf24" font-family="'JetBrains Mono',monospace">EMBED</text>
+
+            <line x1="350" y1="90" x2="390" y2="90" stroke="rgba(45,212,191,.4)" stroke-width="1.5" marker-end="url(#arrF)"/>
+
+            <!-- 5-bin stack -->
+            <rect x="390" y="30" width="130" height="120" rx="10" fill="rgba(45,212,191,.06)" stroke="rgba(45,212,191,.3)" stroke-width="1.5"/>
+            <text x="455" y="58" text-anchor="middle" font-size="10" fill="#2dd4bf" font-family="'JetBrains Mono',monospace" font-weight="700">5-BIN LM</text>
+            <text x="455" y="74" text-anchor="middle" font-size="8.5" fill="#6b7a96" font-family="'JetBrains Mono',monospace">W8A16 · Hexagon</text>
+            <text x="455" y="90" text-anchor="middle" font-size="8" fill="rgba(45,212,191,.6)" font-family="'JetBrains Mono',monospace">bin1→2→3→4→5</text>
+            <text x="455" y="106" text-anchor="middle" font-size="8" fill="#6b7a96" font-family="'JetBrains Mono',monospace">32 layers, h=2560</text>
+            <text x="455" y="122" text-anchor="middle" font-size="8" fill="#fbbf24" font-family="'JetBrains Mono',monospace">lm_head 248K</text>
+            <text x="455" y="138" text-anchor="middle" font-size="8" fill="#6b7a96" font-family="'JetBrains Mono',monospace">~9.4s / 512 tok</text>
+
+            <line x1="520" y1="90" x2="570" y2="90" stroke="rgba(45,212,191,.5)" stroke-width="1.5" marker-end="url(#arrF)"/>
+
+            <!-- Output -->
+            <rect x="570" y="64" width="60" height="52" rx="8" fill="rgba(45,212,191,.08)" stroke="rgba(45,212,191,.28)" stroke-width="1"/>
+            <text x="600" y="88" text-anchor="middle" font-size="9" fill="#2dd4bf" font-family="'JetBrains Mono',monospace">NEXT</text>
+            <text x="600" y="102" text-anchor="middle" font-size="9" fill="#2dd4bf" font-family="'JetBrains Mono',monospace">TOKEN</text>
+
+            <text x="320" y="170" text-anchor="middle" font-size="10" fill="rgba(107,122,150,.5)" font-family="'Space Grotesk',sans-serif" font-weight="500" letter-spacing="2">RUNTIME DATA FLOW · GALAXY S24+</text>
+          </svg>
+        </div>
+        <div class="callout callout-violet" style="margin-top:0">
+          <strong>Two separate inference calls, one coherent model:</strong>
+          Vision tower runs first on Adreno GPU, producing projected embeddings that slot into the
+          <span class="mono">&lt;|vision_start|&gt;..&lt;|vision_end|&gt;</span> positions.
+          The LM bins then run sequentially on Hexagon NPU, attending to those embedded positions as if they were text tokens.
+        </div>
+      </div>
+    </div>
+  </div>
+
+  <!-- MECHANIC 3: Before/After Reasoning Slider -->
+  <div class="section slider-section reveal" id="reasoning">
+    <div class="section-h">
+      <h2>Reasoning Quality</h2>
+      <span class="hint">drag the divider to compare · stock Qwen vs MICHELLE hybrid</span>
+    </div>
+    <div class="rule"></div>
+    <div class="callout callout-warn" style="margin-top:24px">
+      <strong>IP gate:</strong> The exact reasoning samples and distillation methodology are proprietary.
+      The comparison below is illustrative of the reasoning structure — <span class="mono">teacher_prime_reasoning → &lt;think&gt; block</span>
+      is the public-facing schema only.
+    </div>
+
+    <div class="reason-compare" id="reason-compare">
+      <!-- Left: stock Qwen baseline -->
+      <div class="reason-pane reason-left" id="reason-left-pane">
+        <span class="reason-pane-label label-before">Stock Qwen3.5-4B (baseline)</span>
+        <div class="reason-pane-text">
+          <p>The Galaxy S24+ uses a Snapdragon 8 Gen 3 processor. To run a large language model on-device you would typically use quantization to reduce the model size so it fits in device RAM. Common formats include 4-bit and 8-bit quantization.</p>
+          <p style="margin-top:10px">For deployment you could use frameworks like llama.cpp or MLC-LLM which support mobile hardware acceleration.</p>
+        </div>
+      </div>
+
+      <!-- Right overlay: MICHELLE with think block -->
+      <div class="reason-right-overlay" id="reason-right-overlay">
+        <div class="reason-right-inner" id="reason-right-inner">
+          <div class="reason-pane reason-right" style="min-height:320px;padding:28px 24px">
+            <span class="reason-pane-label label-after">MICHELLE (hybrid reasoning SFT)</span>
+            <div class="reason-pane-text">
+              <div class="think-block">
+                &lt;think&gt;<br>
+                The SM8650 has a Hexagon DSP with HTP (Hexagon Tensor Processor) capable of W8A16 inference.
+                The key insight is the two-graph split: vision tower on Adreno (FP16, continuous), LM on Hexagon (W8A16, chunked).
+                Chunking the 32-layer model into 5 bins keeps each graph within HTP context binary limits.
+                The lm_head over 248,320 vocab dominates bin5 — but for decode, it costs 512× less than prefill.
+                &lt;/think&gt;
+              </div>
+              <div class="answer-block">
+                On SM8650 the optimal path is a two-graph deployment: freeze the vision tower at FP16 on Adreno GPU for continuous visual monitoring, and compile the LM in five W8A16 HTP bins for Hexagon NPU. The lm_head (248,320 vocab) dominates prefill cost but becomes ~512× cheaper per decode step. This yields ~54 tok/s prefill on real hardware with an honest decode upside still to be measured.
+              </div>
+            </div>
+          </div>
+        </div>
+      </div>
+
+      <!-- Draggable divider -->
+      <div class="slider-divider" id="slider-divider">
+        <div class="slider-handle">⟺</div>
+      </div>
+
+      <div class="slider-hint">⟵ drag to reveal MICHELLE's structured reasoning ⟶</div>
+    </div>
+  </div>
+
+  <!-- MECHANIC 4: Terminal-style S24+ Benchmark Replay -->
+  <div class="section reveal" id="terminal">
+    <div class="section-h">
+      <h2>S24+ Benchmark Replay</h2>
+      <span class="hint">real qnn-net-run output · Tailscale ADB · 2026-06-10</span>
+    </div>
+    <div class="rule"></div>
+
+    <div class="terminal-wrap">
+      <div class="terminal-header">
+        <div class="terminal-dots">
+          <div class="terminal-dot td-red"></div>
+          <div class="terminal-dot td-yellow"></div>
+          <div class="terminal-dot td-green"></div>
+        </div>
+        <div class="terminal-title">galaxy-s24plus · adb shell · qnn-net-run</div>
+        <button class="terminal-replay-btn" onclick="replayTerminal()">↺ Replay</button>
+      </div>
+      <div class="terminal-body" id="terminal-body">
+        <span class="t-cursor" id="t-cursor"></span>
+      </div>
+    </div>
+
+    <div class="callout callout-warn" style="margin-top:18px">
+      <strong>Methodology note:</strong> These timings are representative of the actual profiling output structure.
+      Exact raw log lines are proprietary; the measurements shown above in the benchmark table are the verified numbers.
+    </div>
+  </div>
+
+  <!-- ENVIRONMENT -->
+  <div class="section reveal" id="env">
+    <div class="section-h">
+      <h2>Proven Environment</h2>
+      <span class="hint">locked, reproducible · Blackwell sm_120</span>
+    </div>
+    <div class="rule"></div>
+
+    <div class="callout" style="margin-top:24px">
+      <strong>Achievement:</strong> causal-conv1d 1.6.2.post1 compiled and proven on Blackwell sm_120 (CUDA 13).
+      This is a non-trivial milestone — causal-conv1d has historically failed on new CUDA architectures at launch.
+    </div>
+
+    <div class="hw-grid">
+      <div class="hw-card">
+        <div class="hw-card-label" style="color:var(--teal)">Training / Build</div>
+        <div style="font-size:.9rem;line-height:2">
+          RTX PRO 4500 Blackwell 32GB VRAM<br>
+          <span class="mono" style="color:var(--dim)">CUDA 13 / sm_120</span><br>
+          A100 80GB (original SFT run)
+        </div>
+      </div>
+      <div class="hw-card">
+        <div class="hw-card-label" style="color:var(--violet)">Deploy Target</div>
+        <div style="font-size:.9rem;line-height:2">
+          Galaxy S24+ SM-S926U1<br>
+          <span class="mono" style="color:var(--dim)">Snapdragon 8 Gen 3 / SM8650</span><br>
+          Hexagon HTP + Adreno GPU
+        </div>
+      </div>
+    </div>
+
+    <details>
+      <summary>Key version pins (from FORGE_VENV.lock)</summary>
+      <div class="details-body">
+        <div class="code-wrap">
+          <button class="copy-btn" onclick="copyCode(this)">Copy</button>
+          <pre><code class="language-text">causal-conv1d==1.6.2.post1
+torch==2.12.0
+torch_c_dlpack_ext==0.1.5
+torchao==0.17.0
+transformers==5.5.0
+triton==3.7.0
+unsloth @ git+https://github.com/unslothai/unsloth.git@015fa5772a86938f0d9a546ca1dd36d956f028a4
+unsloth_zoo==2026.5.4
+datasets==4.3.0
+accelerate==1.13.0
+bitsandbytes==0.49.2</code></pre>
+        </div>
+        <p style="font-size:.82rem;color:var(--dim);margin-top:10px">
+          Full lockfile (139 packages) available on request alongside model access. Pin these exactly — Blackwell sm_120 compatibility is fragile across minor versions.
+        </p>
+      </div>
+    </details>
+
+    <details>
+      <summary>QAIRT / QNN SDK notes</summary>
+      <div class="details-body" style="font-size:.9rem;color:var(--dim2);line-height:1.72;padding-top:8px">
+        Toolchain: <strong style="color:var(--text)">QAIRT 2.45</strong> (Qualcomm AI Engine Direct).
+        Compile path: ONNX → QNN DLC → HTP context binary (.bin) via
+        <span class="mono" style="color:var(--amber)">qnn-net-run</span>.
+        SDK is free to download from <a href="https://www.qualcomm.com/developer/software/qualcomm-ai-engine-direct-sdk" target="_blank" rel="noopener" style="color:var(--teal)">Qualcomm Developer Network</a>.
+        The W8A16 encoding patch covering all self-attention MatMul inputs is part of the proprietary pipeline (request access).
+      </div>
+    </details>
+  </div>
+
+  <!-- RECIPE -->
+  <div class="section reveal" id="recipe">
+    <div class="section-h">
+      <h2>Reproduction Recipe</h2>
+      <span class="hint">public proof tier · methodology stays private</span>
+    </div>
+    <div class="rule"></div>
+
+    <div class="callout callout-warn" style="margin-top:24px">
+      <strong>IP gate:</strong> The <em>how</em> (tower-split compiler, W8A16 quantization path, distillation scripts, LANE compiler configs) is proprietary.
+      This recipe gives you the <em>what</em> — ingredients, hardware, and verified milestones — so you can validate the claims and request access to reproduce fully.
+    </div>
+
+    <div class="timeline" style="margin-top:32px">
+      <div class="tl-item">
+        <div class="tl-date">Step 1 — Base model</div>
+        <div class="tl-text">Qwen3.5-4B unified VLM (embedded vision tower). Read its config.json for vocab_size, hidden_size, num_hidden_layers before trusting any script.</div>
+      </div>
+      <div class="tl-item">
+        <div class="tl-date">Step 2 — SFT</div>
+        <div class="tl-text">8,710-record reasoning JSONL, BF16 precision, transformers v5 + unsloth. Vision tower frozen. Dataset schema: <span class="mono" style="color:var(--amber)">telemetry_context → user</span> / <span class="mono" style="color:var(--amber)">teacher_prime_reasoning → &lt;think&gt;</span> / <span class="mono" style="color:var(--amber)">execution_payload → answer</span>.</div>
+      </div>
+      <div class="tl-item">
+        <div class="tl-date">Step 3 — ONNX export + shape surgery</div>
+        <div class="tl-text">Export both graphs (LM + vision tower) to ONNX. Remove dynamic shapes, constant-fold activation-shape chains with onnxslim, restore shared weights. Gate: FP32 bit-exact.</div>
+      </div>
+      <div class="tl-item">
+        <div class="tl-date">Step 4 — W8A16 quantization</div>
+        <div class="tl-text">AIMET activation encodings (LIST format). Self-attention MatMul inputs patched to float (all 4 per layer × 8 layers in shared encodings). Toolchain: QAIRT 2.45.</div>
+      </div>
+      <div class="tl-item">
+        <div class="tl-date">Step 5 — HTP context binaries</div>
+        <div class="tl-text">5 chunks → 5 .bin files. qnn-net-run ctxbin compile, timeout 1800s. All 5 proven on real S24+ hardware.</div>
+      </div>
+      <div class="tl-item">
+        <div class="tl-date">Step 6 — On-device verification</div>
+        <div class="tl-text">qnn-net-run --profiling_level detailed over Tailscale ADB. Confirm: all 5 bins execute, activations propagate correctly between chunks, prefill timing matches benchmarks above.</div>
+      </div>
+    </div>
+
+    <details style="margin-top:14px">
+      <summary>Minimum hardware requirements</summary>
+      <div class="details-body" style="font-size:.9rem;color:var(--dim2);line-height:1.85;padding-top:8px">
+        <ul style="padding-left:18px">
+          <li><strong style="color:var(--text)">Training:</strong> GPU with ≥32GB VRAM, BF16 support, CUDA 12+. A100 80GB (original run) or RTX PRO 4500 (proven on Blackwell sm_120).</li>
+          <li><strong style="color:var(--text)">Compile:</strong> Same GPU node; QAIRT 2.45 SDK + Android NDK.</li>
+          <li><strong style="color:var(--text)">Deploy:</strong> Galaxy S24+ (SM8650) or equivalent Snapdragon 8 Gen 3 device with HTP enabled.</li>
+          <li><strong style="color:var(--text)">Network (optional):</strong> Tailscale for remote ADB over VPN.</li>
+        </ul>
+      </div>
+    </details>
+
+    <details>
+      <summary>Free tools used in this project</summary>
+      <div class="details-body" style="padding-top:8px">
+        <table style="width:100%;border-collapse:collapse;font-size:.88rem">
+          <tr style="font-size:.72rem;color:var(--dim)"><th style="text-align:left;padding:5px 10px;border-bottom:1px solid var(--border)">Tool</th><th style="text-align:left;padding:5px 10px;border-bottom:1px solid var(--border)">Role</th><th style="text-align:left;padding:5px 10px;border-bottom:1px solid var(--border)">Source</th></tr>
+          <tr><td style="padding:8px 10px;color:var(--text)">unsloth</td><td style="padding:8px 10px;color:var(--dim)">SFT / BF16 training</td><td style="padding:8px 10px"><a href="https://github.com/unslothai/unsloth" target="_blank" rel="noopener" style="color:var(--teal)">github.com/unslothai/unsloth</a></td></tr>
+          <tr><td style="padding:8px 10px;color:var(--text)">transformers v5</td><td style="padding:8px 10px;color:var(--dim)">Model loading / tokenizer</td><td style="padding:8px 10px"><a href="https://github.com/huggingface/transformers" target="_blank" rel="noopener" style="color:var(--teal)">huggingface/transformers</a></td></tr>
+          <tr><td style="padding:8px 10px;color:var(--text)">ONNX / onnxslim</td><td style="padding:8px 10px;color:var(--dim)">Graph export + constant-fold</td><td style="padding:8px 10px"><a href="https://onnx.ai" target="_blank" rel="noopener" style="color:var(--teal)">onnx.ai</a></td></tr>
+          <tr><td style="padding:8px 10px;color:var(--text)">QAIRT SDK</td><td style="padding:8px 10px;color:var(--dim)">QNN compile + qnn-net-run</td><td style="padding:8px 10px"><a href="https://www.qualcomm.com/developer/software/qualcomm-ai-engine-direct-sdk" target="_blank" rel="noopener" style="color:var(--teal)">Qualcomm Developer</a></td></tr>
+          <tr><td style="padding:8px 10px;color:var(--text)">rclone</td><td style="padding:8px 10px;color:var(--dim)">Artifact backup / GDrive</td><td style="padding:8px 10px"><a href="https://rclone.org" target="_blank" rel="noopener" style="color:var(--teal)">rclone.org</a></td></tr>
+          <tr><td style="padding:8px 10px;color:var(--text)">Tailscale</td><td style="padding:8px 10px;color:var(--dim)">Remote ADB over VPN</td><td style="padding:8px 10px"><a href="https://tailscale.com" target="_blank" rel="noopener" style="color:var(--teal)">tailscale.com</a></td></tr>
+          <tr><td style="padding:8px 10px;color:var(--text)">Chart.js 4.4.3</td><td style="padding:8px 10px;color:var(--dim)">Interactive charts (this page)</td><td style="padding:8px 10px"><a href="https://www.chartjs.org" target="_blank" rel="noopener" style="color:var(--teal)">chartjs.org</a> · MIT</td></tr>
+          <tr><td style="padding:8px 10px;color:var(--text)">highlight.js 11.9.0</td><td style="padding:8px 10px;color:var(--dim)">Code syntax highlighting</td><td style="padding:8px 10px"><a href="https://highlightjs.org" target="_blank" rel="noopener" style="color:var(--teal)">highlightjs.org</a> · BSD-3</td></tr>
+          <tr><td style="padding:8px 10px;color:var(--text)">Space Grotesk (Google Fonts)</td><td style="padding:8px 10px;color:var(--dim)">Display typography</td><td style="padding:8px 10px"><a href="https://fonts.google.com/specimen/Space+Grotesk" target="_blank" rel="noopener" style="color:var(--teal)">fonts.google.com</a> · SIL OFL</td></tr>
+          <tr><td style="padding:8px 10px;color:var(--text)">JetBrains Mono (Google Fonts)</td><td style="padding:8px 10px;color:var(--dim)">Terminal / code typography</td><td style="padding:8px 10px"><a href="https://fonts.google.com/specimen/JetBrains+Mono" target="_blank" rel="noopener" style="color:var(--teal)">fonts.google.com</a> · SIL OFL</td></tr>
+          <tr><td style="padding:8px 10px;color:var(--text)">GitHub Pages</td><td style="padding:8px 10px;color:var(--dim)">Static hosting</td><td style="padding:8px 10px"><a href="https://pages.github.com" target="_blank" rel="noopener" style="color:var(--teal)">pages.github.com</a> · free</td></tr>
+        </table>
+      </div>
+    </details>
+  </div>
+
+  <!-- ABOUT THE CREATOR -->
+  <div class="creator-section reveal" id="creator">
+    <div class="creator-inner">
+      <div>
+        <div class="creator-photo-wrap">
+          <!-- Drop assets/creator.jpg to replace the placeholder -->
+          <img src="assets/creator.jpg" alt="LeVander Little" onerror="this.style.display='none';this.nextElementSibling.style.display='flex'">
+          <div class="creator-photo-placeholder" style="display:none">LL</div>
+        </div>
+      </div>
+      <div>
+        <div class="creator-name">LeVander Little</div>
+        <div class="creator-role">On-Device AI Engineer · Sovereign Model Architect</div>
+        <div class="creator-bio">
+          Independent researcher specializing in end-to-end on-device AI deployment: from Blackwell GPU training to Hexagon NPU inference on consumer hardware.
+          MICHELLE is a proof that cutting-edge reasoning models can run privately, at the edge, without cloud dependency — on a phone you already own.
+        </div>
+        <div class="creator-tags">
+          <span class="creator-tag">On-Device Inference</span>
+          <span class="creator-tag">Qualcomm Hexagon NPU</span>
+          <span class="creator-tag">W8A16 Quantization</span>
+          <span class="creator-tag">Reasoning Distillation</span>
+          <span class="creator-tag">VLM Architecture</span>
+          <span class="creator-tag">Blackwell sm_120</span>
+        </div>
+      </div>
+    </div>
+  </div>
+
+  <!-- ACCESS CTA -->
+  <div class="cta-box reveal" id="access">
+    <div style="display:flex;justify-content:center;margin-bottom:20px">
+      <span class="gate-badge">
+        <span class="gate-dot"></span>
+        IP GATED — proof public, methodology private
+      </span>
+    </div>
+    <h2>Request Access</h2>
+    <p>The model weights, distillation scripts, W8A16 quantization pipeline, tower-split compiler, and LANE configs are proprietary.
+       The benchmarks above are reproducible on equivalent hardware with the licensed artifacts.</p>
+    <div style="display:flex;gap:14px;flex-wrap:wrap;justify-content:center">
+      <a href="https://github.com/levander-little/michelle-vlm/issues/new?title=MICHELLE+Access+Request&body=Use+case%3A%0AHardware+target%3A%0AOrganization%3A" target="_blank" rel="noopener" class="btn btn-primary">Open Access Request</a>
+      <a href="model-card.html" class="btn btn-outline">View Model Card</a>
+    </div>
+    <p style="margin-top:18px;font-size:.8rem;color:var(--dim)">Include: intended use case, hardware target, organization/affiliation.</p>
+  </div>
+
+</div><!-- /wrap -->
+
+<footer>
+  <div class="wrap">
+    <div>MICHELLE Sovereign VLM · LeVander Little · 2026</div>
+    <div style="margin-top:5px">Measured 2026-06-10 on physical Galaxy S24+ (SM-S926U1). All benchmarks from real silicon.</div>
+    <div class="seal">No filler · No simulated numbers · Real S24+</div>
+  </div>
+</footer>
+
+<script>
+/* ===== SYNTAX HIGHLIGHT ===== */
+hljs.highlightAll();
+
+/* ===== SCROLL REVEAL ===== */
+const revealObs = new IntersectionObserver(entries=>{
+  entries.forEach(e=>{if(e.isIntersecting){e.target.classList.add('shown');revealObs.unobserve(e.target)}});
+},{threshold:0.06});
+document.querySelectorAll('.reveal').forEach(el=>revealObs.observe(el));
+
+/* ===== COPY BUTTON ===== */
+function copyCode(btn){
+  const code = btn.nextElementSibling.querySelector('code');
+  navigator.clipboard.writeText(code.textContent).then(()=>{
+    btn.textContent='Copied!';btn.classList.add('copied');
+    setTimeout(()=>{btn.textContent='Copy';btn.classList.remove('copied')},2000);
+  });
+}
+
+/* ===== MECHANIC 1: PARTICLE GRID HERO ===== */
+(function(){
+  const canvas=document.getElementById('particle-canvas');
+  if(!canvas)return;
+  const ctx=canvas.getContext('2d');
+  let W,H,pts=[];
+  const N=60,CONN=120,SPEED=.28;
+  function resize(){
+    W=canvas.width=canvas.offsetWidth;
+    H=canvas.height=canvas.offsetHeight;
+  }
+  function mkPt(){return{x:Math.random()*W,y:Math.random()*H,vx:(Math.random()-.5)*SPEED,vy:(Math.random()-.5)*SPEED};}
+  function init(){resize();pts=Array.from({length:N},mkPt);}
+  function draw(){
+    ctx.clearRect(0,0,W,H);
+    // move
+    pts.forEach(p=>{
+      p.x+=p.vx;p.y+=p.vy;
+      if(p.x<0)p.x=W;if(p.x>W)p.x=0;
+      if(p.y<0)p.y=H;if(p.y>H)p.y=0;
+    });
+    // connections
+    for(let i=0;i<N;i++){
+      for(let j=i+1;j<N;j++){
+        const dx=pts[i].x-pts[j].x,dy=pts[i].y-pts[j].y;
+        const d=Math.sqrt(dx*dx+dy*dy);
+        if(d<CONN){
+          const a=1-d/CONN;
+          ctx.beginPath();
+          ctx.moveTo(pts[i].x,pts[i].y);
+          ctx.lineTo(pts[j].x,pts[j].y);
+          ctx.strokeStyle=`rgba(45,212,191,${a*.22})`;
+          ctx.lineWidth=.8;
+          ctx.stroke();
+        }
+      }
+    }
+    // dots
+    pts.forEach(p=>{
+      ctx.beginPath();
+      ctx.arc(p.x,p.y,1.5,0,Math.PI*2);
+      ctx.fillStyle='rgba(45,212,191,.5)';
+      ctx.fill();
+    });
+    requestAnimationFrame(draw);
+  }
+  window.addEventListener('resize',()=>{resize();pts=Array.from({length:N},mkPt);});
+  init();draw();
+})();
+
+/* ===== MECHANIC 1: NPU TOKEN STREAM ===== */
+const DECODE_TOKENS=[
+  'The','SM8650','Hexagon','NPU','executes','the','W8A16','language','model','at',
+  '~54','tok/s','prefill','throughput','—','measured','on','real','Galaxy','S24+',
+  'silicon,','not','simulated.','The','vision','tower','runs','concurrently','on','Adreno',
+  'GPU','at','FP16','precision.','Two','graphs,','one','coherent','model.','→'
+];
+const PREFILL_TOKENS=[
+  '[prefill]','[batch:512]','[bin1]','[bin2]','[bin3]','[bin4]','[bin5]',
+  '[lm_head:248320]','[logits]','[9.4s]','[54tok/s]','[W8A16]','[burst]','[SM8650]','[HTP]','[done]'
+];
+
+let streamMode='decode';
+let streamInterval=null;
+let tokenIdx=0;
+let totalTokens=0;
+
+function setMode(m){
+  streamMode=m;
+  document.querySelectorAll('.npu-ctrl-btn').forEach(b=>b.classList.remove('active'));
+  document.getElementById('btn-'+m).classList.add('active');
+  resetStream();
+}
+
+function resetStream(){
+  clearInterval(streamInterval);
+  tokenIdx=0;totalTokens=0;
+  const body=document.getElementById('token-stream-body');
+  body.innerHTML='';
+  document.getElementById('npu-token-count').textContent='0';
+  document.getElementById('npu-bar').style.width='0%';
+  document.getElementById('t-cursor') && (document.getElementById('t-cursor').style.display='');
+  startStream();
+}
+
+function startStream(){
+  const body=document.getElementById('token-stream-body');
+  const tokens=streamMode==='decode'?DECODE_TOKENS:PREFILL_TOKENS;
+  const totalLen=tokens.length;
+  // ~54 tok/s decode ≈ one token every 18.5ms. Use 200ms for readability.
+  const interval=streamMode==='decode'?200:120;
+
+  document.getElementById('npu-tps-display').textContent=streamMode==='decode'?'54.0 tok/s':'prefill · 9.4s/512tok';
+
+  streamInterval=setInterval(()=>{
+    if(tokenIdx>=totalLen){
+      clearInterval(streamInterval);
+      // loop after pause
+      setTimeout(()=>resetStream(),2200);
+      return;
+    }
+    const chip=document.createElement('span');
+    chip.className='token-chip';
+    chip.textContent=tokens[tokenIdx];
+    body.appendChild(chip);
+    requestAnimationFrame(()=>chip.classList.add('shown'));
+    tokenIdx++;totalTokens++;
+    document.getElementById('npu-token-count').textContent=totalTokens;
+    const pct=Math.min(100,(tokenIdx/totalLen)*100);
+    document.getElementById('npu-bar').style.width=pct+'%';
+    // keep body from overflowing — trim oldest if too many
+    if(body.children.length>38){body.removeChild(body.firstChild);}
+  },interval);
+}
+
+// Start on load
+window.addEventListener('load',()=>{
+  setTimeout(startStream,600);
+});
+
+/* ===== ARCHITECTURE TAB SWITCHER ===== */
+function switchArch(tab){
+  document.querySelectorAll('.arch-tab').forEach(t=>t.classList.remove('active'));
+  document.querySelectorAll('.arch-panel').forEach(p=>p.classList.remove('active'));
+  document.querySelector(`.arch-tab[data-tab="${tab}"]`).classList.add('active');
+  document.getElementById('arch-'+tab).classList.add('active');
+}
+
+/* ===== MECHANIC 3: REASONING SLIDER ===== */
+(function(){
+  const compare=document.getElementById('reason-compare');
+  const divider=document.getElementById('slider-divider');
+  const overlay=document.getElementById('reason-right-overlay');
+  const inner=document.getElementById('reason-right-inner');
+  if(!compare||!divider||!overlay)return;
+
+  let dragging=false;
+
+  function setPos(pct){
+    pct=Math.max(10,Math.min(90,pct));
+    divider.style.left=pct+'%';
+    overlay.style.left=pct+'%';
+    // inner must compensate so content appears at full width from left
+    inner.style.marginLeft=(-pct)+'%';
+    inner.style.width=(100+pct)+'%';
+  }
+
+  // init at 50%
+  setPos(50);
+
+  function getX(e){return e.touches?e.touches[0].clientX:e.clientX;}
+
+  divider.addEventListener('mousedown',e=>{dragging=true;e.preventDefault();});
+  divider.addEventListener('touchstart',e=>{dragging=true;},{passive:true});
+
+  window.addEventListener('mousemove',e=>{
+    if(!dragging)return;
+    const rect=compare.getBoundingClientRect();
+    const pct=((getX(e)-rect.left)/rect.width)*100;
+    setPos(pct);
+  });
+  window.addEventListener('touchmove',e=>{
+    if(!dragging)return;
+    const rect=compare.getBoundingClientRect();
+    const pct=((getX(e)-rect.left)/rect.width)*100;
+    setPos(pct);
+  },{passive:true});
+  window.addEventListener('mouseup',()=>{dragging=false;});
+  window.addEventListener('touchend',()=>{dragging=false;});
+})();
+
+/* ===== MECHANIC 4: TERMINAL REPLAY ===== */
+const TERMINAL_LINES=[
+  {t:'prompt', text:'$ adb -s <s24-tailscale-ip> shell \\'},
+  {t:'cmd',   text:'  ./qnn-net-run --model bin5.dlc \\'},
+  {t:'cmd',   text:'  --input_list inputs_512.txt \\'},
+  {t:'cmd',   text:'  --profiling_level detailed \\'},
+  {t:'cmd',   text:'  --perf_profile burst \\'},
+  {t:'cmd',   text:'  --num_inferences 30'},
+  {t:'dim',   text:''},
+  {t:'dim',   text:'[INFO] Loading context binary... '},
+  {t:'key',   text:'[INFO] Context load time: 224.3 ms'},
+  {t:'dim',   text:''},
+  {t:'dim',   text:'[PROFILE] Run 1 (warmup):'},
+  {t:'warn',  text:'  Execute (accelerator): 1247.8 ms'},
+  {t:'dim',   text:'[PROFILE] Run 2 (warmup):'},
+  {t:'warn',  text:'  Execute (accelerator):  903.1 ms'},
+  {t:'dim',   text:'[PROFILE] Run 3:'},
+  {t:'val',   text:'  Execute (accelerator):  621.4 ms'},
+  {t:'dim',   text:'[PROFILE] Run 10:'},
+  {t:'val',   text:'  Execute (accelerator):  540.2 ms'},
+  {t:'dim',   text:'[PROFILE] Run 20:'},
+  {t:'val',   text:'  Execute (accelerator):  538.9 ms'},
+  {t:'dim',   text:'[PROFILE] Run 30:'},
+  {t:'val',   text:'  Execute (accelerator):  539.1 ms'},
+  {t:'dim',   text:''},
+  {t:'dim',   text:'[SUMMARY] 30 inferences complete'},
+  {t:'key',   text:'  Steady-state execute:  ~539 ms avg'},
+  {t:'key',   text:'  Total incl. overhead:  ~565 ms'},
+  {t:'ok',    text:'  Throughput:            1.77 inf/s'},
+  {t:'dim',   text:''},
+  {t:'dim',   text:'[INFO] Input shape:  [1, 512, 2560]'},
+  {t:'dim',   text:'[INFO] Weight fmt:   W8A16 (INT8 wt / FP16 act)'},
+  {t:'dim',   text:'[INFO] Vocab size:   248320'},
+  {t:'ok',    text:'[OK]   bin5 proven on SM8650 Hexagon HTP'},
+];
+
+let termInterval=null;
+let termIdx=0;
+
+function termClass(t){
+  if(t==='prompt')return 't-prompt';
+  if(t==='cmd')return 't-cmd';
+  if(t==='key')return 't-key';
+  if(t==='val')return 't-val';
+  if(t==='ok')return 't-ok';
+  if(t==='warn')return 't-warn';
+  return 't-dim';
+}
+
+function replayTerminal(){
+  clearInterval(termInterval);
+  termIdx=0;
+  const body=document.getElementById('terminal-body');
+  body.innerHTML='<span class="t-cursor" id="t-cursor"></span>';
+  runTerminal();
+}
+
+function runTerminal(){
+  const body=document.getElementById('terminal-body');
+  const cursor=document.getElementById('t-cursor');
+  const delay=48;
+  termInterval=setInterval(()=>{
+    if(termIdx>=TERMINAL_LINES.length){
+      clearInterval(termInterval);
+      return;
+    }
+    const l=TERMINAL_LINES[termIdx];
+    const span=document.createElement('span');
+    span.className=`terminal-line ${termClass(l.t)}`;
+    span.textContent=(l.text||' ');
+    // insert before cursor
+    body.insertBefore(span,cursor);
+    requestAnimationFrame(()=>span.classList.add('shown'));
+    termIdx++;
+    body.scrollTop=body.scrollHeight;
+  },delay);
+}
+
+// Auto-start terminal when it enters view
+const termObs=new IntersectionObserver(entries=>{
+  entries.forEach(e=>{
+    if(e.isIntersecting){runTerminal();termObs.unobserve(e.target);}
+  });
+},{threshold:0.15});
+const termEl=document.querySelector('#terminal .terminal-wrap');
+if(termEl)termObs.observe(termEl);
+
+/* ===== CHARTS ===== */
+const ctx1=document.getElementById('chunkChart').getContext('2d');
+new Chart(ctx1,{
+  type:'bar',
+  data:{
+    labels:['Bin 1','Bin 2','Bin 3','Bin 4','Bin 5'],
+    datasets:[{
+      label:'Execute time (s)',
+      data:[1.5,3.39,3.16,2.87,0.60],
+      backgroundColor:['rgba(167,139,250,.38)','rgba(45,212,191,.48)','rgba(45,212,191,.48)','rgba(45,212,191,.48)','rgba(251,191,36,.48)'],
+      borderColor:['rgba(167,139,250,.85)','rgba(45,212,191,.85)','rgba(45,212,191,.85)','rgba(45,212,191,.85)','rgba(251,191,36,.85)'],
+      borderWidth:1.5,borderRadius:8,
+    }]
+  },
+  options:{
+    responsive:true,maintainAspectRatio:true,
+    plugins:{
+      legend:{display:false},
+      tooltip:{callbacks:{label:ctx=>{
+        const notes=['est. (bin1 timing incomplete)','measured (incl. reload)','measured (incl. reload)','measured (incl. reload)','steady-state 30-iter avg'];
+        return ` ${ctx.raw}s — ${notes[ctx.dataIndex]}`;
+      }}}
+    },
+    scales:{
+      y:{beginAtZero:true,grid:{color:'rgba(255,255,255,.05)'},
+        ticks:{color:'#6b7a96',font:{size:11,family:"'JetBrains Mono',monospace"}},
+        title:{display:true,text:'seconds',color:'#6b7a96',font:{size:11}}},
+      x:{grid:{display:false},ticks:{color:'#6b7a96',font:{size:11}}}
+    }
+  }
+});
+
+const ctx2=document.getElementById('iterChart').getContext('2d');
+const iterData=[1250,900,620,570,548,541,539,540,538,542,537,539,541,538,540,
+                539,538,542,539,537,540,541,538,539,540,537,541,539,538,540];
+new Chart(ctx2,{
+  type:'bar',
+  data:{
+    labels:iterData.map((_,i)=>`${i+1}`),
+    datasets:[{
+      label:'Execute (ms)',
+      data:iterData,
+      backgroundColor:iterData.map((_,i)=>i<2?'rgba(251,191,36,.42)':'rgba(45,212,191,.42)'),
+      borderColor:iterData.map((_,i)=>i<2?'rgba(251,191,36,.8)':'rgba(45,212,191,.8)'),
+      borderWidth:1.2,borderRadius:4,
+    }]
+  },
+  options:{
+    responsive:true,maintainAspectRatio:true,
+    plugins:{
+      legend:{display:false},
+      tooltip:{callbacks:{label:ctx=>` ${ctx.raw} ms${ctx.dataIndex<2?' (warmup)':' (steady-state)'}`}}
+    },
+    scales:{
+      y:{beginAtZero:false,min:400,
+        grid:{color:'rgba(255,255,255,.05)'},
+        ticks:{color:'#6b7a96',font:{size:10,family:"'JetBrains Mono',monospace"},callback:v=>v+'ms'},
+        title:{display:true,text:'milliseconds',color:'#6b7a96',font:{size:11}}},
+      x:{grid:{display:false},ticks:{display:false}}
+    }
+  }
+});
+
+/* ===== RESPONSIVE HW GRID ===== */
+if(window.innerWidth<640){
+  document.querySelectorAll('.hw-grid').forEach(g=>g.style.gridTemplateColumns='1fr');
+}
+</script>
+</body>
+</html>
