@@ -1,0 +1,954 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Product Catalog — THE SOVEREIGN LATTICE™ · LeVander Little</title>
+<meta name="description" content="Gated toolchain catalog: every script, technique, and operator fix that ships a Qwen3.5-4B VLM to a Galaxy S24+ Hexagon NPU. Request access per product.">
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link href="https://fonts.googleapis.com/css2?family=Space+Grotesk:wght@400;500;600;700;800&family=JetBrains+Mono:wght@400;500;700&display=swap" rel="stylesheet">
+<style>
+/* ===== DESIGN TOKENS (exact match to index.html) ===== */
+:root{
+  --teal:#2dd4bf; --teal-dim:rgba(45,212,191,.12); --teal-glow:rgba(45,212,191,.3);
+  --violet:#a78bfa; --violet-dim:rgba(167,139,250,.10); --violet-glow:rgba(167,139,250,.28);
+  --amber:#fbbf24; --red:#f87171;
+  --bg:#04080f; --bg2:#080d16; --bg3:#0b1220;
+  --glass:rgba(255,255,255,.038); --glass2:rgba(255,255,255,.065);
+  --border:rgba(255,255,255,.08); --border2:rgba(255,255,255,.14);
+  --text:#dde4ef; --dim:#6b7a96; --dim2:#9aa5bc;
+  --font:'Space Grotesk',system-ui,sans-serif;
+  --mono:'JetBrains Mono','SF Mono',Menlo,monospace;
+}
+*{box-sizing:border-box;margin:0;padding:0}
+html{scroll-behavior:smooth}
+body{background:var(--bg);color:var(--text);min-height:100vh;font-family:var(--font);line-height:1.58;-webkit-font-smoothing:antialiased;}
+.wrap{max-width:1100px;margin:0 auto;padding:0 24px 120px}
+.mono{font-family:var(--mono)}
+
+/* ===== NAV ===== */
+nav{position:sticky;top:0;z-index:200;backdrop-filter:blur(22px);-webkit-backdrop-filter:blur(22px);background:rgba(4,8,15,.82);border-bottom:1px solid var(--border);padding:13px 26px;}
+.nav-inner{max-width:1100px;margin:0 auto;display:flex;align-items:center;gap:22px;flex-wrap:wrap}
+.nav-brand{font-weight:800;letter-spacing:.06em;font-size:1rem;color:var(--teal);font-family:var(--font);text-decoration:none;}
+.nav-links{display:flex;gap:20px;flex-wrap:wrap}
+.nav-links a{color:var(--dim);font-size:.85rem;text-decoration:none;font-weight:500;transition:color .2s}
+.nav-links a:hover,.nav-links a.active{color:var(--text)}
+.nav-cta{margin-left:auto}
+.btn{display:inline-block;padding:9px 22px;border-radius:10px;font-size:.86rem;font-weight:700;text-decoration:none;transition:all .22s;cursor:pointer;border:none;font-family:var(--font);letter-spacing:.01em}
+.btn-primary{background:linear-gradient(135deg,var(--teal) 0%,#38d9c8 100%);color:#021810;box-shadow:0 0 20px rgba(45,212,191,.22)}
+.btn-primary:hover{opacity:.9;transform:translateY(-1px);box-shadow:0 0 28px rgba(45,212,191,.35)}
+.btn-gate{display:inline-flex;align-items:center;gap:7px;padding:9px 20px;border-radius:9px;font-size:.83rem;font-weight:700;text-decoration:none;transition:all .22s;background:var(--glass2);border:1px solid var(--border2);color:var(--teal);font-family:var(--font);}
+.btn-gate:hover{background:var(--teal-dim);border-color:var(--teal);transform:translateY(-1px);box-shadow:0 0 18px var(--teal-glow);}
+
+/* ===== HERO ===== */
+.hero{text-align:center;padding:80px 0 56px;}
+.eyebrow{letter-spacing:.52em;font-size:.68rem;color:var(--teal);text-transform:uppercase;margin-bottom:18px;opacity:.85;}
+.hero h1{font-size:clamp(2.2rem,5.5vw,3.8rem);font-weight:800;margin:0 0 8px;letter-spacing:-.03em;line-height:1.1;background:linear-gradient(100deg,#fff 0%,var(--teal) 48%,var(--violet) 80%);-webkit-background-clip:text;background-clip:text;-webkit-text-fill-color:transparent;}
+.hero-sub{color:var(--dim2);font-size:1rem;max-width:640px;margin:0 auto 30px;font-weight:400;line-height:1.7}
+.hero-stats{display:flex;gap:32px;justify-content:center;flex-wrap:wrap;margin-top:32px;}
+.stat{text-align:center;}
+.stat-num{font-size:2rem;font-weight:800;color:var(--teal);font-family:var(--mono);letter-spacing:-.03em;}
+.stat-label{font-size:.75rem;color:var(--dim);letter-spacing:.08em;text-transform:uppercase;margin-top:3px;}
+
+/* ===== NOTICE BANNER ===== */
+.notice{background:linear-gradient(90deg,rgba(167,139,250,.07),rgba(45,212,191,.07));border:1px solid rgba(45,212,191,.18);border-radius:12px;padding:14px 22px;margin-bottom:52px;display:flex;align-items:flex-start;gap:12px;font-size:.88rem;color:var(--dim2);line-height:1.6;}
+.notice-icon{color:var(--teal);font-size:1rem;margin-top:1px;flex-shrink:0;}
+
+/* ===== FILTER BAR ===== */
+.filter-bar{display:flex;gap:10px;flex-wrap:wrap;margin-bottom:40px;align-items:center;}
+.filter-label{font-size:.8rem;color:var(--dim);text-transform:uppercase;letter-spacing:.1em;margin-right:4px;}
+.filter-btn{padding:6px 16px;border-radius:20px;font-size:.8rem;font-weight:600;cursor:pointer;border:1px solid var(--border);background:transparent;color:var(--dim);font-family:var(--font);transition:all .18s;}
+.filter-btn:hover,.filter-btn.active{background:var(--teal-dim);border-color:var(--teal);color:var(--teal);}
+.filter-count{font-size:.7rem;margin-left:4px;opacity:.7;}
+
+/* ===== CATEGORY SECTION ===== */
+.cat-section{margin-bottom:64px;}
+.cat-header{display:flex;align-items:center;gap:14px;margin-bottom:28px;padding-bottom:14px;border-bottom:1px solid var(--border);}
+.cat-icon{font-size:1.4rem;}
+.cat-title{font-size:1.25rem;font-weight:700;color:var(--text);letter-spacing:-.02em;}
+.cat-desc{font-size:.83rem;color:var(--dim);margin-left:auto;max-width:380px;text-align:right;line-height:1.5;}
+
+/* ===== PRODUCT GRID ===== */
+.product-grid{display:grid;grid-template-columns:repeat(auto-fill,minmax(330px,1fr));gap:18px;}
+
+/* ===== PRODUCT CARD ===== */
+.card{background:var(--bg2);border:1px solid var(--border);border-radius:14px;padding:22px 22px 18px;display:flex;flex-direction:column;gap:12px;transition:border-color .22s,box-shadow .22s,transform .22s;position:relative;overflow:hidden;}
+.card::before{content:'';position:absolute;inset:0;border-radius:14px;opacity:0;transition:opacity .22s;background:radial-gradient(ellipse at 0% 0%,var(--teal-dim),transparent 70%);}
+.card:hover{border-color:rgba(45,212,191,.28);box-shadow:0 8px 40px rgba(45,212,191,.08);transform:translateY(-2px);}
+.card:hover::before{opacity:1;}
+.card.violet::before{background:radial-gradient(ellipse at 0% 0%,var(--violet-dim),transparent 70%);}
+.card.violet:hover{border-color:rgba(167,139,250,.28);box-shadow:0 8px 40px rgba(167,139,250,.08);}
+.card.amber::before{background:radial-gradient(ellipse at 0% 0%,rgba(251,191,36,.06),transparent 70%);}
+.card.amber:hover{border-color:rgba(251,191,36,.28);box-shadow:0 8px 40px rgba(251,191,36,.08);}
+
+.card-top{display:flex;align-items:flex-start;justify-content:space-between;gap:10px;}
+.card-tag{font-size:.67rem;font-weight:700;letter-spacing:.1em;text-transform:uppercase;padding:3px 10px;border-radius:20px;white-space:nowrap;flex-shrink:0;}
+.tag-qnn{background:rgba(45,212,191,.12);color:var(--teal);border:1px solid rgba(45,212,191,.2);}
+.tag-agent{background:rgba(167,139,250,.12);color:var(--violet);border:1px solid rgba(167,139,250,.2);}
+.tag-modelops{background:rgba(251,191,36,.1);color:var(--amber);border:1px solid rgba(251,191,36,.2);}
+.tag-repro{background:rgba(248,113,113,.1);color:var(--red);border:1px solid rgba(248,113,113,.2);}
+.tag-onnx{background:rgba(56,189,248,.1);color:#38bdf8;border:1px solid rgba(56,189,248,.2);}
+
+.card-script{font-family:var(--mono);font-size:.68rem;color:var(--dim);background:var(--glass);padding:2px 8px;border-radius:5px;white-space:nowrap;overflow:hidden;text-overflow:ellipsis;max-width:180px;}
+
+.card-title{font-size:.97rem;font-weight:700;color:var(--text);letter-spacing:-.01em;line-height:1.38;position:relative;z-index:1;}
+.card-value{font-size:.83rem;color:var(--dim2);line-height:1.6;position:relative;z-index:1;}
+.card-tools{font-size:.7rem;color:var(--dim);font-family:var(--mono);position:relative;z-index:1;}
+
+.card-footer{margin-top:auto;padding-top:12px;border-top:1px solid var(--border);display:flex;align-items:center;justify-content:space-between;}
+
+/* ===== FOOTER ECOSYSTEM ===== */
+.eco-section{margin-top:80px;padding-top:48px;border-top:1px solid var(--border);}
+.eco-title{font-size:.7rem;letter-spacing:.18em;text-transform:uppercase;color:var(--dim);margin-bottom:24px;}
+.eco-grid{display:grid;grid-template-columns:repeat(auto-fill,minmax(220px,1fr));gap:14px;}
+.eco-card{background:var(--bg2);border:1px solid var(--border);border-radius:12px;padding:16px 18px;text-decoration:none;display:block;transition:all .2s;}
+.eco-card:hover{border-color:var(--border2);background:var(--glass2);}
+.eco-card-label{font-size:.68rem;text-transform:uppercase;letter-spacing:.1em;color:var(--dim);margin-bottom:5px;}
+.eco-card-name{font-size:.9rem;font-weight:700;color:var(--text);}
+.eco-card-url{font-size:.72rem;color:var(--teal);font-family:var(--mono);margin-top:3px;overflow:hidden;text-overflow:ellipsis;white-space:nowrap;}
+
+.footer-copy{margin-top:48px;text-align:center;font-size:.78rem;color:var(--dim);line-height:1.7;}
+.footer-copy a{color:var(--teal);text-decoration:none;}
+
+@media(max-width:600px){
+  .product-grid{grid-template-columns:1fr;}
+  .cat-desc{display:none;}
+  .hero-stats{gap:20px;}
+}
+</style>
+</head>
+<body>
+
+<nav>
+  <div class="nav-inner">
+    <a href="index.html" class="nav-brand">THE SOVEREIGN LATTICE™</a>
+    <div class="nav-links">
+      <a href="index.html">Main Site</a>
+      <a href="model-card.html">Model Card</a>
+      <a href="catalog.html" class="active">Catalog</a>
+      <a href="index.html#access">Access</a>
+    </div>
+    <div class="nav-cta">
+      <a href="https://github.com/levlbars/michelle-sovereign-vault/issues" class="btn btn-primary" target="_blank" rel="noopener">Request Access</a>
+    </div>
+  </div>
+</nav>
+
+<div class="wrap">
+  <div class="hero">
+    <div class="eyebrow">THE SOVEREIGN LATTICE™ · MICHELLE™ · By LeVander Little</div>
+    <h1>Gated Product Catalog</h1>
+    <p class="hero-sub">Every script, operator patch, orchestration harness, and reproducibility tool from the on-device VLM pipeline — disaggregated into individual sellable units. Each product is real, tested, and backed by a concrete artifact in the vault.</p>
+    <div class="hero-stats">
+      <div class="stat"><div class="stat-num">47</div><div class="stat-label">Products</div></div>
+      <div class="stat"><div class="stat-num">5</div><div class="stat-label">Categories</div></div>
+      <div class="stat"><div class="stat-num">W8A16</div><div class="stat-label">Target Precision</div></div>
+      <div class="stat"><div class="stat-num">Galaxy S24+</div><div class="stat-label">Target Device</div></div>
+    </div>
+  </div>
+
+  <div class="notice">
+    <span class="notice-icon">🔒</span>
+    <span>All products are <strong>gated</strong>. Cards show title, value, and category only — no source code, no methodology, no weights, no dataset records. To request access to any individual product, open a GitHub Issue with the product name. Access is reviewed individually.</span>
+  </div>
+
+  <!-- ═══════════════════════════════════════════════════ -->
+  <!-- CATEGORY 1: QNN / ON-DEVICE COMPILE               -->
+  <!-- ═══════════════════════════════════════════════════ -->
+  <div class="cat-section" id="qnn">
+    <div class="cat-header">
+      <span class="cat-icon">⬡</span>
+      <span class="cat-title">QNN / On-Device Compile</span>
+      <span class="cat-desc">ONNX → DLC → Hexagon HTP. The full pipeline for getting a transformer LM onto a Snapdragon NPU — operator patches, quantization, context-binary generation.</span>
+    </div>
+    <div class="product-grid">
+
+      <div class="card">
+        <div class="card-top">
+          <span class="card-tag tag-qnn">QNN Compile</span>
+          <span class="card-script mono">strip_simplify_restore.py</span>
+        </div>
+        <div class="card-title">Strip-Simplify-Restore: shrink a 261k-node ONNX graph past the 2 GB protobuf wall without losing weights</div>
+        <div class="card-value">Strips external-data initializers, runs onnxsim in-memory, then restores weights — the only approach that survives the protobuf 2 GB limit on production-scale LMs.</div>
+        <div class="card-tools mono">onnx · onnxsim · python3</div>
+        <div class="card-footer">
+          <a href="https://github.com/levlbars/michelle-sovereign-vault/issues" class="btn-gate" target="_blank" rel="noopener">🔒 Request Access</a>
+        </div>
+      </div>
+
+      <div class="card">
+        <div class="card-top">
+          <span class="card-tag tag-qnn">QNN Compile</span>
+          <span class="card-script mono">convert_chunk.sh</span>
+        </div>
+        <div class="card-title">ONNX-to-DLC Chunk Converter: FP16 qairt-converter wrapper for chunked LM export</div>
+        <div class="card-value">Drives qairt-converter on each chunkN_sq.onnx → michelle_chunkN.dlc with the exact flags and precision settings that pass QNN validation.</div>
+        <div class="card-tools mono">qairt · onnx</div>
+        <div class="card-footer">
+          <a href="https://github.com/levlbars/michelle-sovereign-vault/issues" class="btn-gate" target="_blank" rel="noopener">🔒 Request Access</a>
+        </div>
+      </div>
+
+      <div class="card">
+        <div class="card-top">
+          <span class="card-tag tag-qnn">QNN Compile</span>
+          <span class="card-script mono">batch_2_5.sh</span>
+        </div>
+        <div class="card-title">Multi-Stage Chunk Pipeline: squeeze → FP32 integrity → mixed-precision conversion → quant → HTP context binary</div>
+        <div class="card-value">Five sequential transformations across model chunks 2-5 in a single auditable script — one command takes raw ONNX splits to device-ready HTP bins.</div>
+        <div class="card-tools mono">qairt · onnx</div>
+        <div class="card-footer">
+          <a href="https://github.com/levlbars/michelle-sovereign-vault/issues" class="btn-gate" target="_blank" rel="noopener">🔒 Request Access</a>
+        </div>
+      </div>
+
+      <div class="card">
+        <div class="card-top">
+          <span class="card-tag tag-qnn">QNN Compile</span>
+          <span class="card-script mono">batch_all_fixed.sh</span>
+        </div>
+        <div class="card-title">Fixed-Transform Batch Processor: re-squeeze(v3) → gate → convert → quant → ctxbin for chunks 2-5</div>
+        <div class="card-value">Locked-version pipeline that applies a deterministic transformation sequence, ensuring reproducible DLC artifacts across sessions.</div>
+        <div class="card-tools mono">qairt · onnx</div>
+        <div class="card-footer">
+          <a href="https://github.com/levlbars/michelle-sovereign-vault/issues" class="btn-gate" target="_blank" rel="noopener">🔒 Request Access</a>
+        </div>
+      </div>
+
+      <div class="card">
+        <div class="card-top">
+          <span class="card-tag tag-qnn">QNN Compile</span>
+          <span class="card-script mono">fold_gate.sh / fold_chunk.py</span>
+        </div>
+        <div class="card-title">Shape-Subgraph Gate Folder: compress a chunk's shape subgraph into a numeric gate via squeeze</div>
+        <div class="card-value">Eliminates dynamic-shape branches that block QNN export — folds them into fixed numeric gates the Hexagon compiler accepts.</div>
+        <div class="card-tools mono">onnx · python3</div>
+        <div class="card-footer">
+          <a href="https://github.com/levlbars/michelle-sovereign-vault/issues" class="btn-gate" target="_blank" rel="noopener">🔒 Request Access</a>
+        </div>
+      </div>
+
+      <div class="card">
+        <div class="card-top">
+          <span class="card-tag tag-qnn">QNN Compile</span>
+          <span class="card-script mono">squeeze_linear_attn.py</span>
+        </div>
+        <div class="card-title">Attention Singleton Squeezer: remove squeeze-redundant dimensions from attention ONNX subgraphs</div>
+        <div class="card-value">Eliminates unit-length dimensions that cause shape-mismatch errors in QNN attention export — a prerequisite for clean DLC compilation.</div>
+        <div class="card-tools mono">onnx · python3</div>
+        <div class="card-footer">
+          <a href="https://github.com/levlbars/michelle-sovereign-vault/issues" class="btn-gate" target="_blank" rel="noopener">🔒 Request Access</a>
+        </div>
+      </div>
+
+      <div class="card">
+        <div class="card-top">
+          <span class="card-tag tag-qnn">QNN Compile</span>
+          <span class="card-script mono">patch_qnn6_maskprep.py</span>
+        </div>
+        <div class="card-title">Causal Bias Baker: compute and bake a static causal attention mask into ONNX initializers</div>
+        <div class="card-value">Converts runtime causal masking into a baked initializer — eliminates a dynamic branch that QNN6 cannot lower to HTP without the patch.</div>
+        <div class="card-tools mono">onnx</div>
+        <div class="card-footer">
+          <a href="https://github.com/levlbars/michelle-sovereign-vault/issues" class="btn-gate" target="_blank" rel="noopener">🔒 Request Access</a>
+        </div>
+      </div>
+
+      <div class="card">
+        <div class="card-top">
+          <span class="card-tag tag-qnn">QNN Compile</span>
+          <span class="card-script mono">patch_qnn7_reducemean_attr.py</span>
+        </div>
+        <div class="card-title">ReduceMean Attribute Fixer: patch keepdims/axes attributes for QNN7 HTP compatibility</div>
+        <div class="card-value">Corrects attribute defaults that differ between ONNX opset and QNN's ReduceMean implementation — stops silent accuracy degradation on-device.</div>
+        <div class="card-tools mono">onnx · python3</div>
+        <div class="card-footer">
+          <a href="https://github.com/levlbars/michelle-sovereign-vault/issues" class="btn-gate" target="_blank" rel="noopener">🔒 Request Access</a>
+        </div>
+      </div>
+
+      <div class="card">
+        <div class="card-top">
+          <span class="card-tag tag-qnn">QNN Compile</span>
+          <span class="card-script mono">patch_qnn8_const_to_init.py</span>
+        </div>
+        <div class="card-title">Const-to-Initializer Converter: promote ONNX Constant nodes to initializers for QNN8</div>
+        <div class="card-value">QNN8 rejects Constant ops in certain positions; this patch converts them to named initializers, unblocking compilation without changing model semantics.</div>
+        <div class="card-tools mono">onnx · python3</div>
+        <div class="card-footer">
+          <a href="https://github.com/levlbars/michelle-sovereign-vault/issues" class="btn-gate" target="_blank" rel="noopener">🔒 Request Access</a>
+        </div>
+      </div>
+
+      <div class="card">
+        <div class="card-top">
+          <span class="card-tag tag-qnn">QNN Compile</span>
+          <span class="card-script mono">canonicalize_axes.py</span>
+        </div>
+        <div class="card-title">Axis Canonicalizer: normalize negative ONNX axis attributes before QNN export</div>
+        <div class="card-value">Walks every axis-carrying ONNX op and converts negative indices to positive — prevents axis-out-of-range errors in the QNN converter.</div>
+        <div class="card-tools mono">onnx</div>
+        <div class="card-footer">
+          <a href="https://github.com/levlbars/michelle-sovereign-vault/issues" class="btn-gate" target="_blank" rel="noopener">🔒 Request Access</a>
+        </div>
+      </div>
+
+      <div class="card">
+        <div class="card-top">
+          <span class="card-tag tag-qnn">QNN Compile</span>
+          <span class="card-script mono">fill_encoding_gaps.py</span>
+        </div>
+        <div class="card-title">Encoding Gap Filler: detect and repair missing or invalid positional-encoding tensors before QAIRT conversion</div>
+        <div class="card-value">Scans for RoPE cos/sin tensors with gaps or NaN/Inf values and repairs them in-place — the silent killer of QNN model accuracy.</div>
+        <div class="card-tools mono">qairt · onnx · python3</div>
+        <div class="card-footer">
+          <a href="https://github.com/levlbars/michelle-sovereign-vault/issues" class="btn-gate" target="_blank" rel="noopener">🔒 Request Access</a>
+        </div>
+      </div>
+
+      <div class="card">
+        <div class="card-top">
+          <span class="card-tag tag-qnn">QNN Compile</span>
+          <span class="card-script mono">run_qnn7_gates.sh</span>
+        </div>
+        <div class="card-title">QNN7 Gate Runner: push and execute all compiled HTP context bins on the target device</div>
+        <div class="card-value">Orchestrates adb push of each gate binary and triggers on-device execution, capturing timing and pass/fail status per gate.</div>
+        <div class="card-tools mono">qairt · adb</div>
+        <div class="card-footer">
+          <a href="https://github.com/levlbars/michelle-sovereign-vault/issues" class="btn-gate" target="_blank" rel="noopener">🔒 Request Access</a>
+        </div>
+      </div>
+
+      <div class="card">
+        <div class="card-top">
+          <span class="card-tag tag-qnn">QNN Compile</span>
+          <span class="card-script mono">finish_bins.sh</span>
+        </div>
+        <div class="card-title">HTP Binary Completion Guard: wait for in-flight builds then verify all bins before proceeding</div>
+        <div class="card-value">Polls build state and blocks downstream steps until every HTP context binary is confirmed present and valid — prevents partial deployments.</div>
+        <div class="card-tools mono">bash</div>
+        <div class="card-footer">
+          <a href="https://github.com/levlbars/michelle-sovereign-vault/issues" class="btn-gate" target="_blank" rel="noopener">🔒 Request Access</a>
+        </div>
+      </div>
+
+      <div class="card">
+        <div class="card-top">
+          <span class="card-tag tag-qnn">QNN Compile</span>
+          <span class="card-script mono">run_offline_quant.py</span>
+        </div>
+        <div class="card-title">Offline W8A16 Quantizer: apply Qualcomm offline quantization to ONNX chunks without a device</div>
+        <div class="card-value">Runs QAIRT's offline quantization pass on each model chunk, producing calibrated W8A16 DLC files ready for Hexagon NPU execution.</div>
+        <div class="card-tools mono">onnx · python3</div>
+        <div class="card-footer">
+          <a href="https://github.com/levlbars/michelle-sovereign-vault/issues" class="btn-gate" target="_blank" rel="noopener">🔒 Request Access</a>
+        </div>
+      </div>
+
+      <div class="card">
+        <div class="card-top">
+          <span class="card-tag tag-qnn">QNN Compile</span>
+          <span class="card-script mono">launch_qnn7_build.sh</span>
+        </div>
+        <div class="card-title">QNN7 Build Launcher: trigger the full QNN7 compile-and-stage pipeline from a single entry point</div>
+        <div class="card-value">Single-command entry that sets environment, validates SDK version, and launches the complete QNN7 build sequence for production artifacts.</div>
+        <div class="card-tools mono">qairt · bash</div>
+        <div class="card-footer">
+          <a href="https://github.com/levlbars/michelle-sovereign-vault/issues" class="btn-gate" target="_blank" rel="noopener">🔒 Request Access</a>
+        </div>
+      </div>
+
+      <div class="card">
+        <div class="card-top">
+          <span class="card-tag tag-onnx">ONNX Surgery</span>
+          <span class="card-script mono">export_vision_tower.py</span>
+        </div>
+        <div class="card-title">Vision Tower ONNX Exporter: extract the Qwen3.5 vision encoder as a standalone FP16 ONNX graph</div>
+        <div class="card-value">Separates the vision tower from the LM head into its own graph — enabling GPU/Adreno deployment independent of the Hexagon NPU language model.</div>
+        <div class="card-tools mono">onnx · torch · transformers · python3</div>
+        <div class="card-footer">
+          <a href="https://github.com/levlbars/michelle-sovereign-vault/issues" class="btn-gate" target="_blank" rel="noopener">🔒 Request Access</a>
+        </div>
+      </div>
+
+      <div class="card">
+        <div class="card-top">
+          <span class="card-tag tag-onnx">ONNX Surgery</span>
+          <span class="card-script mono">enrich_vi.py</span>
+        </div>
+        <div class="card-title">Vision Initializer Enricher: inject missing or underspecified initializer metadata into a vision ONNX graph</div>
+        <div class="card-value">Enriches Enrich_qnn9_vi.onnx with additional initializer fields required by downstream QNN tooling — prevents silent tensor-type mismatches.</div>
+        <div class="card-tools mono">onnx</div>
+        <div class="card-footer">
+          <a href="https://github.com/levlbars/michelle-sovereign-vault/issues" class="btn-gate" target="_blank" rel="noopener">🔒 Request Access</a>
+        </div>
+      </div>
+
+      <div class="card">
+        <div class="card-top">
+          <span class="card-tag tag-onnx">ONNX Surgery</span>
+          <span class="card-script mono">probe_node.py / probe_cmp.py</span>
+        </div>
+        <div class="card-title">ONNX Node Probe Suite: inspect individual nodes and diff two graphs to diagnose structural regressions</div>
+        <div class="card-value">Two-tool set: probe_node extracts per-node shape/type info; probe_cmp diffs two ONNX graphs node-by-node to localize regressions introduced by patches.</div>
+        <div class="card-tools mono">onnx</div>
+        <div class="card-footer">
+          <a href="https://github.com/levlbars/michelle-sovereign-vault/issues" class="btn-gate" target="_blank" rel="noopener">🔒 Request Access</a>
+        </div>
+      </div>
+
+    </div><!-- /product-grid -->
+  </div><!-- /cat-section qnn -->
+
+
+  <!-- ═══════════════════════════════════════════════════ -->
+  <!-- CATEGORY 2: ORCHESTRATION / AGENTS                 -->
+  <!-- ═══════════════════════════════════════════════════ -->
+  <div class="cat-section" id="agents">
+    <div class="cat-header">
+      <span class="cat-icon">⬢</span>
+      <span class="cat-title">Orchestration &amp; Agents</span>
+      <span class="cat-desc">Conductor, grunts, routing, and autonomous loops — the multi-agent harness that runs the pipeline without human supervision.</span>
+    </div>
+    <div class="product-grid">
+
+      <div class="card violet">
+        <div class="card-top">
+          <span class="card-tag tag-agent">Orchestration</span>
+          <span class="card-script mono">conductor.sh</span>
+        </div>
+        <div class="card-title">Autonomic Conductor: supervise all pipeline subsystems and self-heal from failures</div>
+        <div class="card-value">The brain of the operation — monitors every subprocess, detects failures, and autonomously restarts or reroutes without human intervention.</div>
+        <div class="card-tools mono">bash</div>
+        <div class="card-footer">
+          <a href="https://github.com/levlbars/michelle-sovereign-vault/issues" class="btn-gate" target="_blank" rel="noopener">🔒 Request Access</a>
+        </div>
+      </div>
+
+      <div class="card violet">
+        <div class="card-top">
+          <span class="card-tag tag-agent">Orchestration</span>
+          <span class="card-script mono">grunt_pipeline.sh</span>
+        </div>
+        <div class="card-title">Work-Stealing Grunt Scheduler: distribute tasks dynamically across local LLM workers with no upstream dependency</div>
+        <div class="card-value">Each grunt pulls from a shared task queue independently — no central bottleneck, horizontal scale, zero-dependency launch.</div>
+        <div class="card-tools mono">ollama</div>
+        <div class="card-footer">
+          <a href="https://github.com/levlbars/michelle-sovereign-vault/issues" class="btn-gate" target="_blank" rel="noopener">🔒 Request Access</a>
+        </div>
+      </div>
+
+      <div class="card violet">
+        <div class="card-top">
+          <span class="card-tag tag-agent">Orchestration</span>
+          <span class="card-script mono">grunt_orchestrator.sh</span>
+        </div>
+        <div class="card-title">DAG-Aware Grunt Orchestrator: execute multi-grunt workflows with dependency-ordered task scheduling</div>
+        <div class="card-value">Reads a workflow config, resolves task dependencies into a DAG, and dispatches work to grunts in correct order — parallel where safe, sequential where required.</div>
+        <div class="card-tools mono">ollama · python3</div>
+        <div class="card-footer">
+          <a href="https://github.com/levlbars/michelle-sovereign-vault/issues" class="btn-gate" target="_blank" rel="noopener">🔒 Request Access</a>
+        </div>
+      </div>
+
+      <div class="card violet">
+        <div class="card-top">
+          <span class="card-tag tag-agent">Orchestration</span>
+          <span class="card-script mono">grunt_route.sh</span>
+        </div>
+        <div class="card-title">Policy-Based Escalation Router: enforce privilege escalation rules from local to cloud per GRUNT_POLICY</div>
+        <div class="card-value">Implements the escalation ladder — local first, cloud only when local fails or task exceeds policy threshold. Keeps cloud costs predictable.</div>
+        <div class="card-tools mono">bash</div>
+        <div class="card-footer">
+          <a href="https://github.com/levlbars/michelle-sovereign-vault/issues" class="btn-gate" target="_blank" rel="noopener">🔒 Request Access</a>
+        </div>
+      </div>
+
+      <div class="card violet">
+        <div class="card-top">
+          <span class="card-tag tag-agent">Agents</span>
+          <span class="card-script mono">grunt_adapter.sh</span>
+        </div>
+        <div class="card-title">Per-Model Behavioral Adapter: apply persistent behavioral rules to each grunt model without retraining</div>
+        <div class="card-value">Injects model-specific system context at runtime so every grunt behaves consistently regardless of which Ollama model is running underneath.</div>
+        <div class="card-tools mono">ollama</div>
+        <div class="card-footer">
+          <a href="https://github.com/levlbars/michelle-sovereign-vault/issues" class="btn-gate" target="_blank" rel="noopener">🔒 Request Access</a>
+        </div>
+      </div>
+
+      <div class="card violet">
+        <div class="card-top">
+          <span class="card-tag tag-agent">Agents</span>
+          <span class="card-script mono">grunt_browse.sh</span>
+        </div>
+        <div class="card-title">Grunt Web Browser: give sandboxed LLM workers internet access via a proxy intermediary</div>
+        <div class="card-value">Grunts cannot open raw sockets — this bridges them to the web through a controlled proxy, enabling self-directed web research within the pipeline.</div>
+        <div class="card-tools mono">python3</div>
+        <div class="card-footer">
+          <a href="https://github.com/levlbars/michelle-sovereign-vault/issues" class="btn-gate" target="_blank" rel="noopener">🔒 Request Access</a>
+        </div>
+      </div>
+
+      <div class="card violet">
+        <div class="card-top">
+          <span class="card-tag tag-agent">Agents</span>
+          <span class="card-script mono">grunt_learn.sh / grunt_learn_web.sh</span>
+        </div>
+        <div class="card-title">Grunt Knowledge Accumulator: append dated, deduplicated lessons to a persistent knowledge base</div>
+        <div class="card-value">Two-tool set for self-teaching grunts — local lesson extraction with hash-dedup and web-scrape mode for autonomous pre-job research.</div>
+        <div class="card-tools mono">ollama · python3</div>
+        <div class="card-footer">
+          <a href="https://github.com/levlbars/michelle-sovereign-vault/issues" class="btn-gate" target="_blank" rel="noopener">🔒 Request Access</a>
+        </div>
+      </div>
+
+      <div class="card violet">
+        <div class="card-top">
+          <span class="card-tag tag-agent">Agents</span>
+          <span class="card-script mono">evolve_loop.sh / lnn_autotrain.py</span>
+        </div>
+        <div class="card-title">Autonomous LNN Evolution Loop: run a Liquid Neural Network on a timer to continuously learn from its own outputs</div>
+        <div class="card-value">A closed feedback loop — the LNN generates predictions, scores them empirically, and retrains on its own success metrics without human labeling.</div>
+        <div class="card-tools mono">torch · python3</div>
+        <div class="card-footer">
+          <a href="https://github.com/levlbars/michelle-sovereign-vault/issues" class="btn-gate" target="_blank" rel="noopener">🔒 Request Access</a>
+        </div>
+      </div>
+
+      <div class="card violet">
+        <div class="card-top">
+          <span class="card-tag tag-agent">Agents</span>
+          <span class="card-script mono">cloud_call.sh</span>
+        </div>
+        <div class="card-title">Cloud AI Teacher Bridge: invoke a cloud LLM teacher with failover, using GRUNT_SYSTEM and vault knowledge</div>
+        <div class="card-value">Routes a prompt to a configurable cloud provider with automatic failover — enriched with GRUNT_SYSTEM context so the teacher always has project-aware background.</div>
+        <div class="card-tools mono">ollama · python3</div>
+        <div class="card-footer">
+          <a href="https://github.com/levlbars/michelle-sovereign-vault/issues" class="btn-gate" target="_blank" rel="noopener">🔒 Request Access</a>
+        </div>
+      </div>
+
+    </div><!-- /product-grid -->
+  </div><!-- /cat-section agents -->
+
+
+  <!-- ═══════════════════════════════════════════════════ -->
+  <!-- CATEGORY 3: MODEL OPS / TRAINING                   -->
+  <!-- ═══════════════════════════════════════════════════ -->
+  <div class="cat-section" id="modelops">
+    <div class="cat-header">
+      <span class="cat-icon">◈</span>
+      <span class="cat-title">Model Ops &amp; Training</span>
+      <span class="cat-desc">Fine-tuning, benchmarking, evaluation, and GPU offload management for the Qwen3.5-4B VLM.</span>
+    </div>
+    <div class="product-grid">
+
+      <div class="card amber">
+        <div class="card-top">
+          <span class="card-tag tag-modelops">Training</span>
+          <span class="card-script mono">16_SOVEREIGN_DISTILL_HONEST_PROD.py</span>
+        </div>
+        <div class="card-title">Sovereign Distill Honest (LANE A): production SFT fine-tune of Qwen3.5-4B on 8710-record reasoning JSONL</div>
+        <div class="card-value">BF16 SFT with unsloth + transformers v5 — the source-of-truth fine-tuning script. Maps telemetry_context → user, teacher_prime_reasoning → think block, execution_payload → answer.</div>
+        <div class="card-tools mono">unsloth · transformers · torch · onnx</div>
+        <div class="card-footer">
+          <a href="https://github.com/levlbars/michelle-sovereign-vault/issues" class="btn-gate" target="_blank" rel="noopener">🔒 Request Access</a>
+        </div>
+      </div>
+
+      <div class="card amber">
+        <div class="card-top">
+          <span class="card-tag tag-modelops">Training</span>
+          <span class="card-script mono">autotune_offload.sh</span>
+        </div>
+        <div class="card-title">Dynamic GPU Offload Maximizer: measure free VRAM and tune GPU layer count for 27B model while keeping 8B resident</div>
+        <div class="card-value">Reads live free memory and computes the optimal --gpu-layers setting for the 27B MoE without evicting the resident 8B model — zero wasted VRAM.</div>
+        <div class="card-tools mono">unsloth · ollama</div>
+        <div class="card-footer">
+          <a href="https://github.com/levlbars/michelle-sovereign-vault/issues" class="btn-gate" target="_blank" rel="noopener">🔒 Request Access</a>
+        </div>
+      </div>
+
+      <div class="card amber">
+        <div class="card-top">
+          <span class="card-tag tag-modelops">Evaluation</span>
+          <span class="card-script mono">benchmark_harness.sh</span>
+        </div>
+        <div class="card-title">Honest Benchmark Harness: run systematic performance evaluation using the exact production pipeline and architecture</div>
+        <div class="card-value">Benchmarks the model as deployed — same tokenizer, same quantization, same chunked execution path. No cherry-picked FP32 numbers.</div>
+        <div class="card-tools mono">qairt</div>
+        <div class="card-footer">
+          <a href="https://github.com/levlbars/michelle-sovereign-vault/issues" class="btn-gate" target="_blank" rel="noopener">🔒 Request Access</a>
+        </div>
+      </div>
+
+      <div class="card amber">
+        <div class="card-top">
+          <span class="card-tag tag-modelops">Evaluation</span>
+          <span class="card-script mono">benchmark_h2h.sh</span>
+        </div>
+        <div class="card-title">Head-to-Head Benchmark: run 30B MoE on CPU vs 8B on GPU in parallel and compare latency/throughput</div>
+        <div class="card-value">Simultaneous execution of both models with synchronized prompts — produces comparable wall-clock numbers that validate the NPU deployment case.</div>
+        <div class="card-tools mono">ollama</div>
+        <div class="card-footer">
+          <a href="https://github.com/levlbars/michelle-sovereign-vault/issues" class="btn-gate" target="_blank" rel="noopener">🔒 Request Access</a>
+        </div>
+      </div>
+
+      <div class="card amber">
+        <div class="card-top">
+          <span class="card-tag tag-modelops">Evaluation</span>
+          <span class="card-script mono">eval_refusal_rate.py</span>
+        </div>
+        <div class="card-title">Refusal Rate Evaluator: measure how often a fine-tuned model inappropriately refuses multi-domain prompts</div>
+        <div class="card-value">Probes the fine-tuned model against the training domain spread and reports refusal rate — critical quality gate before any deployment.</div>
+        <div class="card-tools mono">torch · transformers</div>
+        <div class="card-footer">
+          <a href="https://github.com/levlbars/michelle-sovereign-vault/issues" class="btn-gate" target="_blank" rel="noopener">🔒 Request Access</a>
+        </div>
+      </div>
+
+      <div class="card amber">
+        <div class="card-top">
+          <span class="card-tag tag-modelops">Evaluation</span>
+          <span class="card-script mono">best_model.sh</span>
+        </div>
+        <div class="card-title">Win-Rate Model Selector: evaluate multiple checkpoints and return the highest-performing model for a task type</div>
+        <div class="card-value">Compares checkpoints on a held-out task distribution and returns the winner — used to pick the production checkpoint before QNN export.</div>
+        <div class="card-tools mono">bash</div>
+        <div class="card-footer">
+          <a href="https://github.com/levlbars/michelle-sovereign-vault/issues" class="btn-gate" target="_blank" rel="noopener">🔒 Request Access</a>
+        </div>
+      </div>
+
+      <div class="card amber">
+        <div class="card-top">
+          <span class="card-tag tag-modelops">Model Ops</span>
+          <span class="card-script mono">run_aimet_optimization.py</span>
+        </div>
+        <div class="card-title">AIMET Optimization Runner: apply Qualcomm AI Model Efficiency Toolkit passes to transformer weights</div>
+        <div class="card-value">Drives AIMET compression and quantization on the model — a prerequisite for meeting the accuracy-vs-size targets on Hexagon NPU.</div>
+        <div class="card-tools mono">torch · transformers</div>
+        <div class="card-footer">
+          <a href="https://github.com/levlbars/michelle-sovereign-vault/issues" class="btn-gate" target="_blank" rel="noopener">🔒 Request Access</a>
+        </div>
+      </div>
+
+      <div class="card amber">
+        <div class="card-top">
+          <span class="card-tag tag-modelops">Model Ops</span>
+          <span class="card-script mono">lnn_router.py</span>
+        </div>
+        <div class="card-title">LNN Routing Manager: neural-network-based request router that selects the best model for each incoming task</div>
+        <div class="card-value">A lightweight LNN that classifies task type and routes to the highest-scoring resident model — replaces static routing with empirically-tuned selection.</div>
+        <div class="card-tools mono">ollama · python3</div>
+        <div class="card-footer">
+          <a href="https://github.com/levlbars/michelle-sovereign-vault/issues" class="btn-gate" target="_blank" rel="noopener">🔒 Request Access</a>
+        </div>
+      </div>
+
+    </div><!-- /product-grid -->
+  </div><!-- /cat-section modelops -->
+
+
+  <!-- ═══════════════════════════════════════════════════ -->
+  <!-- CATEGORY 4: DEVICE / ADB / LIVE DEPLOYMENT        -->
+  <!-- ═══════════════════════════════════════════════════ -->
+  <div class="cat-section" id="device">
+    <div class="cat-header">
+      <span class="cat-icon">◇</span>
+      <span class="cat-title">Device &amp; Live Deployment</span>
+      <span class="cat-desc">ADB bridge, on-device run, live inference, and playground server — the last-mile layer that puts the model on a real Galaxy S24+.</span>
+    </div>
+    <div class="product-grid">
+
+      <div class="card">
+        <div class="card-top">
+          <span class="card-tag tag-qnn">On-Device</span>
+          <span class="card-script mono">adb_bridge.sh</span>
+        </div>
+        <div class="card-title">ADB Network Bridge: control a real Galaxy S24+ from a cloud pod over Tailscale without USB</div>
+        <div class="card-value">Establishes adb-over-TCP to the physical device through Tailscale — enables fully automated remote deployment and test runs from any cloud VM.</div>
+        <div class="card-tools mono">qairt · tailscale</div>
+        <div class="card-footer">
+          <a href="https://github.com/levlbars/michelle-sovereign-vault/issues" class="btn-gate" target="_blank" rel="noopener">🔒 Request Access</a>
+        </div>
+      </div>
+
+      <div class="card">
+        <div class="card-top">
+          <span class="card-tag tag-qnn">On-Device</span>
+          <span class="card-script mono">live_device_run.sh</span>
+        </div>
+        <div class="card-title">Live Device Runner: execute the full inference pipeline on the Galaxy S24+ Hexagon NPU and stream results back</div>
+        <div class="card-value">Pushes the compiled DLC chunks, triggers on-device inference, and streams token output back to the host — the end-to-end proof-of-life script.</div>
+        <div class="card-tools mono">qairt · adb</div>
+        <div class="card-footer">
+          <a href="https://github.com/levlbars/michelle-sovereign-vault/issues" class="btn-gate" target="_blank" rel="noopener">🔒 Request Access</a>
+        </div>
+      </div>
+
+      <div class="card">
+        <div class="card-top">
+          <span class="card-tag tag-qnn">On-Device</span>
+          <span class="card-script mono">full_chain_bench.sh</span>
+        </div>
+        <div class="card-title">End-to-End Chain Benchmark: sequentially push all five resilient bins and execute them to simulate true on-device inference</div>
+        <div class="card-value">The definitive device benchmark — pushes all bins in chain order and measures wall-clock latency for the complete token generation path.</div>
+        <div class="card-tools mono">qairt · python3</div>
+        <div class="card-footer">
+          <a href="https://github.com/levlbars/michelle-sovereign-vault/issues" class="btn-gate" target="_blank" rel="noopener">🔒 Request Access</a>
+        </div>
+      </div>
+
+      <div class="card">
+        <div class="card-top">
+          <span class="card-tag tag-qnn">On-Device</span>
+          <span class="card-script mono">resilient_bench.sh / run_bin.sh</span>
+        </div>
+        <div class="card-title">Resilient Bin Runner: execute HTP context bins with retry logic and per-bin pass/fail logging</div>
+        <div class="card-value">Wraps each bin execution in error-handling and retry logic — produces a reliable per-bin success log even when the device resets mid-run.</div>
+        <div class="card-tools mono">qairt · bash</div>
+        <div class="card-footer">
+          <a href="https://github.com/levlbars/michelle-sovereign-vault/issues" class="btn-gate" target="_blank" rel="noopener">🔒 Request Access</a>
+        </div>
+      </div>
+
+      <div class="card">
+        <div class="card-top">
+          <span class="card-tag tag-qnn">On-Device</span>
+          <span class="card-script mono">socks_forward.py</span>
+        </div>
+        <div class="card-title">TCP Relay via Tailscale: forward a local port to the Galaxy S24+ over an encrypted mesh network</div>
+        <div class="card-value">Pure-Python TCP relay that bridges a pod local port to the on-device service via Tailscale — no VPN config required, works in restricted network environments.</div>
+        <div class="card-tools mono">tailscale · python3</div>
+        <div class="card-footer">
+          <a href="https://github.com/levlbars/michelle-sovereign-vault/issues" class="btn-gate" target="_blank" rel="noopener">🔒 Request Access</a>
+        </div>
+      </div>
+
+      <div class="card">
+        <div class="card-top">
+          <span class="card-tag tag-agent">Playground</span>
+          <span class="card-script mono">playground_server.py</span>
+        </div>
+        <div class="card-title">SOVEREIGN Self-Hosted Showcase Server: run an interactive web demo of MICHELLE™ inference on local hardware</div>
+        <div class="card-value">Serves a web UI backed by Ollama — the exact same server powering the live demo linked from the main site. Zero cloud dependency.</div>
+        <div class="card-tools mono">ollama · python3</div>
+        <div class="card-footer">
+          <a href="https://github.com/levlbars/michelle-sovereign-vault/issues" class="btn-gate" target="_blank" rel="noopener">🔒 Request Access</a>
+        </div>
+      </div>
+
+    </div><!-- /product-grid -->
+  </div><!-- /cat-section device -->
+
+
+  <!-- ═══════════════════════════════════════════════════ -->
+  <!-- CATEGORY 5: REPRODUCIBILITY / INFRA               -->
+  <!-- ═══════════════════════════════════════════════════ -->
+  <div class="cat-section" id="repro">
+    <div class="cat-header">
+      <span class="cat-icon">◉</span>
+      <span class="cat-title">Reproducibility &amp; Infrastructure</span>
+      <span class="cat-desc">Environment bootstrap, SDK archiving, Google Drive sync, disk guards, and release gates — everything needed to rebuild the full pipeline from scratch.</span>
+    </div>
+    <div class="product-grid">
+
+      <div class="card">
+        <div class="card-top">
+          <span class="card-tag tag-repro">Bootstrap</span>
+          <span class="card-script mono">SOVEREIGN_INIT.sh</span>
+        </div>
+        <div class="card-title">SOVEREIGN Environment Bootstrapper: provision a fresh pod with QAIRT, rclone, Ollama, and Python in one command</div>
+        <div class="card-value">Complete cold-start bootstrap — installs every dependency, mounts persistent storage, and validates the environment before any pipeline step runs.</div>
+        <div class="card-tools mono">qairt · rclone · ollama · python3</div>
+        <div class="card-footer">
+          <a href="https://github.com/levlbars/michelle-sovereign-vault/issues" class="btn-gate" target="_blank" rel="noopener">🔒 Request Access</a>
+        </div>
+      </div>
+
+      <div class="card">
+        <div class="card-top">
+          <span class="card-tag tag-repro">Reproducibility</span>
+          <span class="card-script mono">archive_sdks.sh</span>
+        </div>
+        <div class="card-title">SDK/NDK Archiver: tar-compress the full SDK+NDK set inside a container and upload to Google Drive</div>
+        <div class="card-value">Creates a versioned, compressed archive of every SDK and NDK used in the build — the single artifact needed to recreate the exact compiler environment.</div>
+        <div class="card-tools mono">rclone</div>
+        <div class="card-footer">
+          <a href="https://github.com/levlbars/michelle-sovereign-vault/issues" class="btn-gate" target="_blank" rel="noopener">🔒 Request Access</a>
+        </div>
+      </div>
+
+      <div class="card">
+        <div class="card-top">
+          <span class="card-tag tag-repro">Reproducibility</span>
+          <span class="card-script mono">forge_venv_guard.sh</span>
+        </div>
+        <div class="card-title">Virtualenv Lock Guard: verify a Blackwell venv matches its lock file and restore from lock on mismatch</div>
+        <div class="card-value">Detects venv drift on every session start and restores from the pinned lock file — guarantees the same Python environment for every build.</div>
+        <div class="card-tools mono">rclone</div>
+        <div class="card-footer">
+          <a href="https://github.com/levlbars/michelle-sovereign-vault/issues" class="btn-gate" target="_blank" rel="noopener">🔒 Request Access</a>
+        </div>
+      </div>
+
+      <div class="card">
+        <div class="card-top">
+          <span class="card-tag tag-repro">Storage</span>
+          <span class="card-script mono">disk_guard.sh</span>
+        </div>
+        <div class="card-title">Disk Space Guard: refuse Ollama model pulls when /tmp free space drops below a safe threshold</div>
+        <div class="card-value">Wraps every pull in a free-space check — prevents the silent mid-pull corruption that happens when /tmp fills during a large model download.</div>
+        <div class="card-tools mono">ollama</div>
+        <div class="card-footer">
+          <a href="https://github.com/levlbars/michelle-sovereign-vault/issues" class="btn-gate" target="_blank" rel="noopener">🔒 Request Access</a>
+        </div>
+      </div>
+
+      <div class="card">
+        <div class="card-top">
+          <span class="card-tag tag-repro">Storage</span>
+          <span class="card-script mono">gdrive_cleanup.sh</span>
+        </div>
+        <div class="card-title">Google Drive Cache Cleaner: recursively purge venv and pycache directories from Drive to reclaim space</div>
+        <div class="card-value">Targets the specific directories that bloat Drive syncs (site-packages/__pycache__, venv/) and removes them without touching project files.</div>
+        <div class="card-tools mono">rclone · git · python3</div>
+        <div class="card-footer">
+          <a href="https://github.com/levlbars/michelle-sovereign-vault/issues" class="btn-gate" target="_blank" rel="noopener">🔒 Request Access</a>
+        </div>
+      </div>
+
+      <div class="card">
+        <div class="card-top">
+          <span class="card-tag tag-repro">Storage</span>
+          <span class="card-script mono">gdrive_realign.sh</span>
+        </div>
+        <div class="card-title">Google Drive Structural Realigner: grunt-driven folder reorganization to match a target directory schema</div>
+        <div class="card-value">Reads a target layout spec and moves Drive files to match — makes the remote Drive structure exactly mirror the local project layout.</div>
+        <div class="card-tools mono">rclone · ollama</div>
+        <div class="card-footer">
+          <a href="https://github.com/levlbars/michelle-sovereign-vault/issues" class="btn-gate" target="_blank" rel="noopener">🔒 Request Access</a>
+        </div>
+      </div>
+
+      <div class="card">
+        <div class="card-top">
+          <span class="card-tag tag-repro">Release</span>
+          <span class="card-script mono">release_guard.sh</span>
+        </div>
+        <div class="card-title">IP/Secrets Release Gate: block publication of any artifact containing methodology, credentials, or SIGINT specifics</div>
+        <div class="card-value">Scans a directory tree for prohibited patterns before any git push — zero-false-negative guard that prevents accidental IP leak in public releases.</div>
+        <div class="card-tools mono">bash</div>
+        <div class="card-footer">
+          <a href="https://github.com/levlbars/michelle-sovereign-vault/issues" class="btn-gate" target="_blank" rel="noopener">🔒 Request Access</a>
+        </div>
+      </div>
+
+      <div class="card">
+        <div class="card-top">
+          <span class="card-tag tag-repro">Reproducibility</span>
+          <span class="card-script mono">telemetry_pack.py</span>
+        </div>
+        <div class="card-title">Telemetry Packer: compress and package telemetry records for transfer using zstd</div>
+        <div class="card-value">Processes and zstd-compresses telemetry snapshots for efficient transfer between pod sessions — keeps the training audit trail intact across environments.</div>
+        <div class="card-tools mono">zstd · python3</div>
+        <div class="card-footer">
+          <a href="https://github.com/levlbars/michelle-sovereign-vault/issues" class="btn-gate" target="_blank" rel="noopener">🔒 Request Access</a>
+        </div>
+      </div>
+
+      <div class="card">
+        <div class="card-top">
+          <span class="card-tag tag-repro">Verification</span>
+          <span class="card-script mono">verify_qnn6_contract.py / verify_qnn6_parity.py</span>
+        </div>
+        <div class="card-title">QNN6 Contract &amp; Parity Verifiers: validate compiled ONNX outputs match expected shapes and parity constraints</div>
+        <div class="card-value">Two-script test suite that checks the compiled QNN6 graph against its specification contract and verifies numerical parity with the FP16 reference.</div>
+        <div class="card-tools mono">onnx · python3</div>
+        <div class="card-footer">
+          <a href="https://github.com/levlbars/michelle-sovereign-vault/issues" class="btn-gate" target="_blank" rel="noopener">🔒 Request Access</a>
+        </div>
+      </div>
+
+      <div class="card">
+        <div class="card-top">
+          <span class="card-tag tag-repro">Verification</span>
+          <span class="card-script mono">debug_preflight.sh</span>
+        </div>
+        <div class="card-title">Lane B Preflight Debugger: comprehensive diagnostic check that identifies failure points before a QNN build</div>
+        <div class="card-value">Examines logs, configs, and process states in one pass — pinpoints exactly where a Lane B build will fail before you waste compute on it.</div>
+        <div class="card-tools mono">qairt · python3</div>
+        <div class="card-footer">
+          <a href="https://github.com/levlbars/michelle-sovereign-vault/issues" class="btn-gate" target="_blank" rel="noopener">🔒 Request Access</a>
+        </div>
+      </div>
+
+      <div class="card">
+        <div class="card-top">
+          <span class="card-tag tag-repro">Verification</span>
+          <span class="card-script mono">grunt_context_digest.sh</span>
+        </div>
+        <div class="card-title">Hash-Based Codebase Context Sweeper: deduplicate and digest a codebase using SHA hashes across all grunts</div>
+        <div class="card-value">Orchestrates a parallel grunt sweep to hash every script, identify redundant copies, and produce a clean context digest — prerequisite for safe cleanup.</div>
+        <div class="card-tools mono">qairt · git · ollama</div>
+        <div class="card-footer">
+          <a href="https://github.com/levlbars/michelle-sovereign-vault/issues" class="btn-gate" target="_blank" rel="noopener">🔒 Request Access</a>
+        </div>
+      </div>
+
+    </div><!-- /product-grid -->
+  </div><!-- /cat-section repro -->
+
+
+  <!-- ═══════════════════════════════════════════════════ -->
+  <!-- FOOTER ECOSYSTEM                                   -->
+  <!-- ═══════════════════════════════════════════════════ -->
+  <div class="eco-section">
+    <div class="eco-title">Ecosystem &amp; Cross-References</div>
+    <div class="eco-grid">
+      <a href="https://github.com/levlbars/michelle-sovereign-vault" class="eco-card" target="_blank" rel="noopener">
+        <div class="eco-card-label">Source Repository</div>
+        <div class="eco-card-name">Michelle Sovereign Vault</div>
+        <div class="eco-card-url">github.com/levlbars/michelle-sovereign-vault</div>
+      </a>
+      <a href="https://levlbars.github.io/michelle-sovereign-vault" class="eco-card" target="_blank" rel="noopener">
+        <div class="eco-card-label">Live Demo Site</div>
+        <div class="eco-card-name">THE SOVEREIGN LATTICE™</div>
+        <div class="eco-card-url">levlbars.github.io/michelle-sovereign-vault</div>
+      </a>
+      <a href="https://huggingface.co/levlbars" class="eco-card" target="_blank" rel="noopener">
+        <div class="eco-card-label">Model Hub</div>
+        <div class="eco-card-name">HuggingFace — levlbars</div>
+        <div class="eco-card-url">huggingface.co/levlbars</div>
+      </a>
+      <a href="https://github.com/levlbars/michelle-sovereign-vault/issues" class="eco-card" target="_blank" rel="noopener">
+        <div class="eco-card-label">Access Requests</div>
+        <div class="eco-card-name">GitHub Issues — Request Access</div>
+        <div class="eco-card-url">github.com/levlbars/michelle-sovereign-vault/issues</div>
+      </a>
+      <a href="https://developer.qualcomm.com/blog" class="eco-card" target="_blank" rel="noopener">
+        <div class="eco-card-label">Future Post</div>
+        <div class="eco-card-name">Qualcomm Developer Blog</div>
+        <div class="eco-card-url">developer.qualcomm.com/blog — (forthcoming)</div>
+      </a>
+      <a href="model-card.html" class="eco-card">
+        <div class="eco-card-label">Model Documentation</div>
+        <div class="eco-card-name">MICHELLE™ Model Card</div>
+        <div class="eco-card-url">levlbars.github.io/…/model-card.html</div>
+      </a>
+    </div>
+  </div>
+
+  <div class="footer-copy">
+    <p>THE SOVEREIGN LATTICE™ · MICHELLE™ &nbsp;·&nbsp; Created by <a href="https://github.com/levlbars">LeVander Little</a> &nbsp;·&nbsp; 2026</p>
+    <p style="margin-top:6px;font-size:.72rem;">All products gated. No source code, weights, or methodology exposed in this catalog.<br>
+    Citations: <a href="https://www.qualcomm.com/developer/software/qualcomm-ai-engine-direct-sdk" target="_blank" rel="noopener">QAIRT SDK</a> · <a href="https://onnx.ai" target="_blank" rel="noopener">ONNX</a> · <a href="https://github.com/unslothai/unsloth" target="_blank" rel="noopener">Unsloth</a> · <a href="https://ollama.com" target="_blank" rel="noopener">Ollama</a> · <a href="https://tailscale.com" target="_blank" rel="noopener">Tailscale</a> · <a href="https://rclone.org" target="_blank" rel="noopener">rclone</a></p>
+  </div>
+
+</div><!-- /wrap -->
+</body>
+</html>
