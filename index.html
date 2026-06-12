@@ -3,8 +3,22 @@
 <head>
 <meta charset="UTF-8">
 <meta name="viewport" content="width=device-width, initial-scale=1.0">
-<title>SOVEREIGN ROADS — MICHELLE™ · On-Device VLM · Galaxy S24+ · Hexagon NPU</title>
-<meta name="description" content="SOVEREIGN ROADS — MICHELLE™, a Qwen3.5-4B W8A16 on-device VLM avatar running live on Hexagon NPU. Real S24+ benchmarks, proven toolchain, Lattice family.">
+<title>SOVEREIGN ROADS — MICHELLE™ · W8A16 On-Device VLM · Galaxy S24+ Hexagon NPU · Qwen QNN Export Solved</title>
+<meta name="description" content="SOVEREIGN ROADS solved the RoPE/QNN export wall. MICHELLE™ runs W8A16 on Galaxy S24+ Hexagon NPU — proven end-to-end: Qwen3.5-4B, qairt-converter, DLC, 54 tok/s. Real benchmarks.">
+<meta name="keywords" content="Qwen QNN export, RoPE shape error QNN, Hexagon NPU W8A16, on-device VLM Snapdragon, qairt-converter DLC, ARM64 relocation onnx 2GB, Qwen3.5 on-device, Galaxy S24+ NPU, SM8650 Hexagon HTP, W8A16 quantization, ONNX DLC conversion">
+<meta property="og:title" content="SOVEREIGN ROADS — MICHELLE™ · W8A16 VLM on Galaxy S24+ Hexagon NPU">
+<meta property="og:description" content="We solved the RoPE/QNN export wall. MICHELLE™ — Qwen3.5-4B W8A16 — runs live on Galaxy S24+ Hexagon NPU. Real S24+ benchmarks, proven toolchain, Lattice family.">
+<meta property="og:image" content="assets/og-card.png">
+<meta property="og:url" content="https://levlbars.github.io/michelle-sovereign-vault/">
+<meta property="og:type" content="website">
+<meta property="og:site_name" content="SOVEREIGN ROADS">
+<meta name="twitter:card" content="summary_large_image">
+<meta name="twitter:title" content="SOVEREIGN ROADS — MICHELLE™ · W8A16 VLM on Hexagon NPU">
+<meta name="twitter:description" content="We solved the RoPE/QNN export wall. Qwen3.5-4B W8A16 running live on Galaxy S24+. Real benchmarks. Proven toolchain.">
+<meta name="twitter:image" content="assets/og-card.png">
+<script type="application/ld+json">
+{"@context":"https://schema.org","@type":"SoftwareApplication","name":"MICHELLE™ — SOVEREIGN ROADS On-Device VLM Pipeline","applicationCategory":"DeveloperApplication","operatingSystem":"Android/Snapdragon","description":"End-to-end pipeline to train and deploy a Qwen3.5-4B W8A16 VLM on Galaxy S24+ Hexagon NPU. Solves RoPE shape errors in QNN export, ARM64 ONNX 2GB limit, qairt-converter DLC compilation, and W8A16 offline quantization.","author":{"@type":"Person","name":"LeVander Little","url":"https://github.com/levlbars"},"url":"https://levlbars.github.io/michelle-sovereign-vault/","keywords":"Qwen QNN export, RoPE shape error QNN, Hexagon NPU W8A16, on-device VLM Snapdragon, qairt-converter DLC, ARM64 relocation onnx 2GB","datePublished":"2026-06-12"}
+</script>
 <!-- Space Grotesk (premium display) + JetBrains Mono (terminal/code) — Google Fonts, free -->
 <link rel="preconnect" href="https://fonts.googleapis.com">
 <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
@@ -541,9 +555,35 @@ footer{margin-top:80px;text-align:center;color:var(--dim);font-size:.8rem;paddin
   .cta-box{padding:30px 22px}
   .reason-compare{touch-action:pan-y}
 }
+
+/* ===== BREAKTHROUGH BANNER ===== */
+#breakthrough-banner{
+  position:sticky;top:0;z-index:300;
+  background:linear-gradient(90deg,rgba(45,212,191,.12),rgba(124,58,237,.12));
+  border-bottom:1px solid rgba(45,212,191,.3);
+  padding:8px 20px;
+  display:flex;align-items:center;justify-content:center;gap:14px;flex-wrap:wrap;
+  font-size:.82rem;font-weight:600;color:var(--teal);
+  text-align:center;
+}
+#breakthrough-banner a{color:var(--teal);text-decoration:underline;text-underline-offset:2px;font-weight:700;}
+#breakthrough-banner a:hover{color:#fff;}
+#banner-dismiss{
+  margin-left:10px;background:transparent;border:none;cursor:pointer;
+  color:var(--dim);font-size:1rem;line-height:1;padding:0 4px;
+  transition:color .18s;font-family:var(--font);
+}
+#banner-dismiss:hover{color:var(--text);}
 </style>
 </head>
 <body>
+
+<!-- BREAKTHROUGH BANNER -->
+<div id="breakthrough-banner">
+  <span>&#9888;&#65039; <strong>We solved the RoPE/QNN export wall</strong> — proven W8A16 on Galaxy S24+. Hexagon NPU running now.</span>
+  <a href="#benchmarks">See proof &rarr;</a>
+  <button id="banner-dismiss" aria-label="Dismiss" onclick="this.parentElement.style.display='none'">&#10005;</button>
+</div>
 
 <!-- NAV -->
 <nav>

@@ -3,8 +3,22 @@
 <head>
 <meta charset="UTF-8">
 <meta name="viewport" content="width=device-width, initial-scale=1.0">
-<title>SOVEREIGN ROADS — Model Card · MICHELLE™ · Qwen3.5-4B W8A16</title>
-<meta name="description" content="Model card for MICHELLE™ by SOVEREIGN ROADS — Qwen3.5-4B W8A16 on-device VLM for Galaxy S24+ Hexagon NPU. Lattice family architecture.">
+<title>MICHELLE™ Model Card — Qwen3.5-4B W8A16 · Hexagon NPU · Galaxy S24+ · SOVEREIGN ROADS</title>
+<meta name="description" content="Model card for MICHELLE™ by SOVEREIGN ROADS — Qwen3.5-4B W8A16 on-device VLM for Galaxy S24+ Hexagon NPU. Proven: RoPE/QNN export, qairt-converter DLC, ARM64 2GB ONNX, 54 tok/s.">
+<meta name="keywords" content="Qwen QNN export, RoPE shape error QNN, Hexagon NPU W8A16, on-device VLM Snapdragon, qairt-converter DLC, ARM64 relocation onnx 2GB, model card, Qwen3.5-4B, VLM deployment">
+<meta property="og:title" content="MICHELLE™ Model Card — Qwen3.5-4B W8A16 on Galaxy S24+ Hexagon NPU">
+<meta property="og:description" content="Model card: MICHELLE™ by SOVEREIGN ROADS. Qwen3.5-4B W8A16, 5-bin HTP chunked, 54 tok/s prefill on SM8650. RoPE/QNN export solved.">
+<meta property="og:image" content="assets/og-card.png">
+<meta property="og:url" content="https://levlbars.github.io/michelle-sovereign-vault/model-card.html">
+<meta property="og:type" content="article">
+<meta property="og:site_name" content="SOVEREIGN ROADS">
+<meta name="twitter:card" content="summary_large_image">
+<meta name="twitter:title" content="MICHELLE™ Model Card — Qwen3.5-4B W8A16 on Hexagon NPU">
+<meta name="twitter:description" content="SOVEREIGN ROADS MICHELLE™: Qwen3.5-4B W8A16, Hexagon NPU, Galaxy S24+. RoPE/QNN export proven.">
+<meta name="twitter:image" content="assets/og-card.png">
+<script type="application/ld+json">
+{"@context":"https://schema.org","@type":"TechArticle","headline":"MICHELLE™ Model Card — Qwen3.5-4B W8A16 on Galaxy S24+ Hexagon NPU","description":"Technical model card for MICHELLE™, a Qwen3.5-4B VLM quantized to W8A16 and deployed on Hexagon NPU via qairt-converter. Covers architecture, benchmarks, and the solved RoPE/QNN export challenge.","author":{"@type":"Person","name":"LeVander Little","url":"https://github.com/levlbars"},"publisher":{"@type":"Organization","name":"SOVEREIGN ROADS"},"url":"https://levlbars.github.io/michelle-sovereign-vault/model-card.html","datePublished":"2026-06-12","keywords":"Qwen QNN export, RoPE shape error QNN, Hexagon NPU W8A16, on-device VLM Snapdragon, qairt-converter DLC, ARM64 relocation onnx 2GB"}
+</script>
 <!-- Space Grotesk (display) + JetBrains Mono (terminal/code) — Google Fonts, free, SIL OFL -->
 <link rel="preconnect" href="https://fonts.googleapis.com">
 <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
@@ -117,9 +131,35 @@ footer{margin-top:72px;text-align:center;color:var(--dim);font-size:.8rem;paddin
   .kv{grid-template-columns:1fr}
   .page-header{padding:50px 0 32px}
 }
+
+/* ===== BREAKTHROUGH BANNER ===== */
+#breakthrough-banner{
+  position:sticky;top:0;z-index:300;
+  background:linear-gradient(90deg,rgba(45,212,191,.12),rgba(124,58,237,.12));
+  border-bottom:1px solid rgba(45,212,191,.3);
+  padding:8px 20px;
+  display:flex;align-items:center;justify-content:center;gap:14px;flex-wrap:wrap;
+  font-size:.82rem;font-weight:600;color:var(--teal);
+  text-align:center;
+}
+#breakthrough-banner a{color:var(--teal);text-decoration:underline;text-underline-offset:2px;font-weight:700;}
+#breakthrough-banner a:hover{color:#fff;}
+#banner-dismiss{
+  margin-left:10px;background:transparent;border:none;cursor:pointer;
+  color:var(--dim);font-size:1rem;line-height:1;padding:0 4px;
+  transition:color .18s;font-family:var(--font);
+}
+#banner-dismiss:hover{color:var(--text);}
 </style>
 </head>
 <body>
+
+<!-- BREAKTHROUGH BANNER -->
+<div id="breakthrough-banner">
+  <span>&#9888;&#65039; <strong>We solved the RoPE/QNN export wall</strong> — proven W8A16 on Galaxy S24+. Hexagon NPU running now.</span>
+  <a href="index.html#benchmarks">See proof &rarr;</a>
+  <button id="banner-dismiss" aria-label="Dismiss" onclick="this.parentElement.style.display='none'">&#10005;</button>
+</div>
 
 <nav>
   <div class="nav-inner">
