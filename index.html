@@ -75,8 +75,94 @@ nav{
   background:linear-gradient(100deg,#fff 0%,var(--teal) 48%,var(--violet) 80%);
   -webkit-background-clip:text;background-clip:text;-webkit-text-fill-color:transparent;
 }
+.hero-tagline{
+  color:var(--teal);font-size:.95rem;font-weight:600;letter-spacing:.04em;margin:0 auto 10px;
+  text-shadow:0 0 18px rgba(45,212,191,.45);
+}
 .hero-sub{color:var(--dim2);font-size:1.04rem;max-width:580px;margin:0 auto 38px;font-weight:400;line-height:1.65}
 .hero-ctas{display:flex;gap:12px;justify-content:center;flex-wrap:wrap}
+.btn-hero-cta{
+  background:linear-gradient(135deg,#2dd4bf 0%,#7c3aed 100%);
+  color:#fff;padding:14px 32px;font-size:1rem;font-weight:800;border-radius:14px;
+  box-shadow:0 0 0 3px rgba(45,212,191,.25),0 0 36px rgba(45,212,191,.45),0 0 72px rgba(124,58,237,.3);
+  animation:hero-glow 2.4s ease-in-out infinite alternate;
+  text-decoration:none;display:inline-block;font-family:var(--font);cursor:pointer;border:none;letter-spacing:.01em;
+}
+.btn-hero-cta:hover{transform:translateY(-2px) scale(1.03);box-shadow:0 0 0 4px rgba(45,212,191,.35),0 0 56px rgba(45,212,191,.65),0 0 90px rgba(124,58,237,.45)}
+@keyframes hero-glow{
+  from{box-shadow:0 0 0 3px rgba(45,212,191,.25),0 0 28px rgba(45,212,191,.38),0 0 55px rgba(124,58,237,.22)}
+  to{box-shadow:0 0 0 4px rgba(45,212,191,.38),0 0 52px rgba(45,212,191,.65),0 0 90px rgba(124,58,237,.42)}
+}
+
+/* ===== TOOL CARDS (QNN Wall / RoPE Viz / Latency Est.) ===== */
+.tool-card{
+  background:var(--glass);border:1px solid var(--border);border-radius:22px;
+  padding:36px 32px;backdrop-filter:blur(16px);-webkit-backdrop-filter:blur(16px);
+  position:relative;overflow:hidden;
+}
+.tool-card::before{
+  content:"";position:absolute;inset:0;border-radius:22px;
+  background:linear-gradient(135deg,rgba(45,212,191,.03) 0%,transparent 60%);
+  pointer-events:none;
+}
+.tool-card-header{display:flex;align-items:center;gap:14px;margin-bottom:8px;flex-wrap:wrap}
+.tool-card-icon{
+  width:44px;height:44px;border-radius:12px;display:flex;align-items:center;justify-content:center;
+  font-size:1.3rem;flex-shrink:0;
+}
+.tool-card h3{font-size:1.2rem;font-weight:800;letter-spacing:-.01em}
+.tool-card-sub{font-size:.86rem;color:var(--dim2);margin-bottom:26px;line-height:1.65}
+.tool-row{display:flex;gap:14px;flex-wrap:wrap;align-items:flex-end;margin-bottom:14px}
+.tool-field{display:flex;flex-direction:column;gap:5px;flex:1;min-width:130px}
+.tool-label{font-size:.72rem;text-transform:uppercase;letter-spacing:.12em;color:var(--dim);font-weight:600}
+.tool-select,.tool-range{
+  background:rgba(255,255,255,.05);border:1px solid var(--border);border-radius:9px;
+  color:var(--text);padding:9px 14px;font-size:.88rem;font-family:var(--font);
+  outline:none;cursor:pointer;transition:border-color .2s;
+}
+.tool-select:focus,.tool-range:focus{border-color:rgba(45,212,191,.4)}
+.tool-select option{background:#0b1220}
+.tool-range{padding:4px 0;accent-color:var(--teal)}
+.tool-result-panel{
+  margin-top:20px;border-radius:14px;padding:22px 24px;
+  border:1px solid var(--border);background:rgba(4,10,20,.6);
+  min-height:80px;transition:border-color .35s;
+}
+.tool-result-panel.ok{border-color:rgba(45,212,191,.4);background:rgba(45,212,191,.04)}
+.tool-result-panel.warn{border-color:rgba(251,191,36,.4);background:rgba(251,191,36,.04)}
+.tool-result-panel.err{border-color:rgba(248,113,113,.4);background:rgba(248,113,113,.04)}
+.tool-result-title{font-size:.88rem;font-weight:700;margin-bottom:8px}
+.tool-result-list{list-style:none;padding:0;margin:0 0 14px}
+.tool-result-list li{font-size:.84rem;padding:5px 0;border-bottom:1px solid rgba(255,255,255,.04);color:var(--dim2);display:flex;gap:8px}
+.tool-result-list li:last-child{border-bottom:none}
+.wall-ok{color:var(--teal)}.wall-warn{color:var(--amber)}.wall-err{color:var(--red)}
+.wall-icon{font-size:1rem;flex-shrink:0}
+.sovereign-cta-inline{
+  display:inline-flex;align-items:center;gap:7px;padding:9px 20px;border-radius:10px;
+  font-size:.82rem;font-weight:700;text-decoration:none;font-family:var(--font);
+  background:linear-gradient(135deg,var(--teal) 0%,#38d9c8 100%);color:#021810;
+  box-shadow:0 0 18px rgba(45,212,191,.28);transition:all .2s;margin-top:10px;cursor:pointer;border:none;
+}
+.sovereign-cta-inline:hover{opacity:.88;transform:translateY(-1px);box-shadow:0 0 30px rgba(45,212,191,.45)}
+
+/* RoPE Viz canvas */
+.rope-canvas-wrap{margin:20px 0;border-radius:14px;overflow:hidden;border:1px solid var(--border);background:rgba(4,10,20,.8)}
+#ropeCanvas{display:block;width:100%;height:200px}
+.rope-legend{display:flex;gap:18px;flex-wrap:wrap;font-size:.76rem;margin-top:10px;color:var(--dim2)}
+.rope-legend-item{display:flex;align-items:center;gap:6px}
+.rope-swatch{width:14px;height:14px;border-radius:3px;flex-shrink:0}
+
+/* Latency Est. output */
+.latency-output{display:grid;grid-template-columns:repeat(auto-fit,minmax(140px,1fr));gap:12px;margin-top:20px}
+.latency-stat{
+  background:rgba(255,255,255,.04);border:1px solid var(--border);border-radius:12px;
+  padding:16px;text-align:center;transition:border-color .3s;
+}
+.latency-stat.highlight{border-color:rgba(45,212,191,.35);background:rgba(45,212,191,.05)}
+.latency-val{font-size:1.55rem;font-weight:800;letter-spacing:-.02em;color:var(--teal)}
+.latency-lbl{font-size:.68rem;text-transform:uppercase;letter-spacing:.12em;color:var(--dim);margin-top:4px}
+.latency-note{font-size:.7rem;color:var(--dim);margin-top:3px}
+.range-display{font-size:.82rem;font-weight:700;color:var(--text);min-width:60px;text-align:right}
 
 /* ===== LIVE TOKEN STREAM (Mechanic 1) ===== */
 .npu-stream-panel{
@@ -470,6 +556,9 @@ footer{margin-top:80px;text-align:center;color:var(--dim);font-size:.8rem;paddin
       <a href="#reasoning">Reasoning</a>
       <a href="#terminal">S24+ Replay</a>
       <a href="#recipe">Recipe</a>
+      <a href="#qnn-wall">QNN Wall</a>
+      <a href="#rope-viz">RoPE Viz</a>
+      <a href="#latency-est">Latency Est.</a>
       <a href="#coming-soon">Coming Soon</a>
       <a href="#creator">Creator</a>
       <a href="catalog.html">Catalog</a>
@@ -488,9 +577,11 @@ footer{margin-top:80px;text-align:center;color:var(--dim);font-size:.8rem;paddin
     <canvas id="particle-canvas" aria-hidden="true"></canvas>
     <div class="hero-content">
       <div class="eyebrow">SOVEREIGN ROADS · avatar: MICHELLE™ · Lattice Family · 2026</div>
-      <h1>MICHELLE™<br>Live on Hexagon NPU</h1>
-      <p class="hero-sub">MICHELLE™ by SOVEREIGN ROADS — W8A16 language model + FP16 vision tower running on a real Galaxy S24+ (SM8650). Proven end-to-end: Blackwell training → W8A16 quantization → on-device inference. Powered by the Lattice tool family.</p>
+      <h1>On-Device VLM on<br>Hexagon NPU</h1>
+      <p class="hero-tagline">Optimized for Hexagon NPU — No Cloud Required.</p>
+      <p class="hero-sub">Real S24+ Benchmarks, Proven Toolchain, Open Recipe. MICHELLE™ by SOVEREIGN ROADS — W8A16 language model + FP16 vision tower running on a real Galaxy S24+ (SM8650). Proven end-to-end: Blackwell training → W8A16 quantization → on-device inference.</p>
       <div class="hero-ctas">
+        <a href="#access" class="btn btn-hero-cta">🔒 Request Early Access</a>
         <a href="#benchmarks" class="btn btn-primary">See Real Benchmarks</a>
         <a href="#recipe" class="btn btn-outline">Reproduction Recipe</a>
       </div>
@@ -1109,6 +1200,144 @@ bitsandbytes==0.49.2</code></pre>
     </div>
   </div>
 
+  <!-- ===== TOOL A: QNN WALL CHECKER ===== -->
+  <div class="section reveal" id="qnn-wall">
+    <div class="section-h">
+      <h2>Developer Tools</h2>
+      <span class="hint">illustrative · based on publicly-documented QNN export limits</span>
+    </div>
+    <div class="rule"></div>
+
+    <div class="tool-card" style="margin-top:28px;border-top:2px solid var(--teal)">
+      <div class="tool-card-header">
+        <div class="tool-card-icon" style="background:rgba(45,212,191,.1);border:1px solid rgba(45,212,191,.2)">🧱</div>
+        <div>
+          <h3>QNN Wall Checker</h3>
+          <div style="font-size:.76rem;color:var(--teal);font-family:var(--mono);letter-spacing:.06em">TOOL A · EXPORT WALL DETECTOR</div>
+        </div>
+      </div>
+      <p class="tool-card-sub">Pick your model size and bitwidth — instantly see which known on-device export walls you'd hit (2 GB protobuf limit, ARM64 ADRP ±4 GB relocation, RoPE shape mismatch). These are publicly-documented QNN/ONNX/ARM64 constraints. The fix is gated.</p>
+
+      <div class="tool-row">
+        <div class="tool-field">
+          <label class="tool-label" for="wall-size">Model Size</label>
+          <select class="tool-select" id="wall-size" onchange="runWallCheck()">
+            <option value="0.5">0.5B params</option>
+            <option value="1.5">1.5B params</option>
+            <option value="3">3B params</option>
+            <option value="4" selected>4B params (this project)</option>
+            <option value="7">7B params</option>
+            <option value="14">14B params</option>
+            <option value="32">32B params</option>
+          </select>
+        </div>
+        <div class="tool-field">
+          <label class="tool-label" for="wall-bits">Bitwidth</label>
+          <select class="tool-select" id="wall-bits" onchange="runWallCheck()">
+            <option value="16">FP16 (full)</option>
+            <option value="8" selected>W8A16 (INT8 weights)</option>
+            <option value="4">W4A16 (INT4 weights)</option>
+          </select>
+        </div>
+        <div class="tool-field">
+          <label class="tool-label" for="wall-bins">Graph Bins (chunking)</label>
+          <select class="tool-select" id="wall-bins" onchange="runWallCheck()">
+            <option value="1">1 bin (monolith)</option>
+            <option value="2">2 bins</option>
+            <option value="3">3 bins</option>
+            <option value="5" selected>5 bins (this project)</option>
+            <option value="8">8 bins</option>
+          </select>
+        </div>
+      </div>
+
+      <div class="tool-result-panel" id="wall-result">
+        <div class="tool-result-title" style="color:var(--dim)">Select options above to check export walls</div>
+      </div>
+    </div>
+  </div>
+
+  <!-- ===== TOOL B: ROPE SHAPE VISUALIZER ===== -->
+  <div class="section reveal" id="rope-viz" style="margin-top:56px">
+    <div class="tool-card" style="border-top:2px solid var(--violet)">
+      <div class="tool-card-header">
+        <div class="tool-card-icon" style="background:rgba(167,139,250,.1);border:1px solid rgba(167,139,250,.2)">〰️</div>
+        <div>
+          <h3>RoPE Shape Visualizer</h3>
+          <div style="font-size:.76rem;color:var(--violet);font-family:var(--mono);letter-spacing:.06em">TOOL B · EXPORT SHAPE MISMATCH DIAGRAM</div>
+        </div>
+      </div>
+      <p class="tool-card-sub">Animated illustration of how cos/sin + rotate_half tensor shapes misalign during ONNX/QNN export — the exact shape-mismatch wall that breaks most open-source RoPE implementations at export time. The method to fix it is gated.</p>
+
+      <div style="display:flex;gap:10px;margin-bottom:8px;flex-wrap:wrap">
+        <button class="npu-ctrl-btn active" id="rope-btn-broken" onclick="setRopeMode('broken')">Broken (Export Shape)</button>
+        <button class="npu-ctrl-btn" id="rope-btn-aligned" onclick="setRopeMode('aligned')">Aligned (Result)</button>
+      </div>
+
+      <div class="rope-canvas-wrap">
+        <canvas id="ropeCanvas" height="200"></canvas>
+      </div>
+      <div class="rope-legend">
+        <div class="rope-legend-item"><div class="rope-swatch" style="background:#a78bfa"></div>cos cache shape</div>
+        <div class="rope-legend-item"><div class="rope-swatch" style="background:#2dd4bf"></div>sin cache shape</div>
+        <div class="rope-legend-item"><div class="rope-swatch" style="background:#fbbf24"></div>rotate_half output</div>
+        <div class="rope-legend-item"><div class="rope-swatch" style="background:rgba(248,113,113,.7)"></div>shape mismatch (broadcast fails)</div>
+      </div>
+
+      <div id="rope-status" style="margin-top:16px;padding:14px 18px;border-radius:10px;font-size:.88rem;font-weight:600;
+        background:rgba(248,113,113,.07);border:1px solid rgba(248,113,113,.3);color:var(--red)">
+        ✗ Shape mismatch: cos [seq,1,1,dim/2] ✕ rotate_half [batch,heads,seq,dim/2] — broadcast dimension collision on static export graph
+      </div>
+
+      <a href="#access" class="sovereign-cta-inline" style="margin-top:14px">🔒 SOVEREIGN ROADS solved this →</a>
+    </div>
+  </div>
+
+  <!-- ===== TOOL C: ON-DEVICE LATENCY ESTIMATOR ===== -->
+  <div class="section reveal" id="latency-est" style="margin-top:56px">
+    <div class="tool-card" style="border-top:2px solid var(--amber)">
+      <div class="tool-card-header">
+        <div class="tool-card-icon" style="background:rgba(251,191,36,.1);border:1px solid rgba(251,191,36,.2)">⚡</div>
+        <div>
+          <h3>On-Device Latency Estimator</h3>
+          <div style="font-size:.76rem;color:var(--amber);font-family:var(--mono);letter-spacing:.06em">TOOL C · S24+ HEXAGON HTP ESTIMATE · ILLUSTRATIVE</div>
+        </div>
+      </div>
+      <p class="tool-card-sub">Estimate prefill and per-token latency for your target context length and bitwidth — anchored to the real ~54 tok/s prefill measured on Galaxy S24+ (SM8650, W8A16, 5-bin chain). <strong style="color:var(--amber)">Illustrative estimate only</strong> — decode throughput needs a decode-shaped graph and is not yet measured.</p>
+
+      <div class="tool-row" style="align-items:center">
+        <div class="tool-field">
+          <label class="tool-label" for="lat-tokens">Prefill Tokens: <span class="range-display" id="lat-tok-display">512</span></label>
+          <input type="range" class="tool-range" id="lat-tokens" min="64" max="4096" step="64" value="512" oninput="updateLatency()">
+        </div>
+        <div class="tool-field">
+          <label class="tool-label" for="lat-bits">Bitwidth</label>
+          <select class="tool-select" id="lat-bits" onchange="updateLatency()">
+            <option value="8" selected>W8A16 (this project)</option>
+            <option value="4">W4A16 (est.)</option>
+            <option value="16">FP16 (est.)</option>
+          </select>
+        </div>
+        <div class="tool-field">
+          <label class="tool-label" for="lat-bins">Graph Bins</label>
+          <select class="tool-select" id="lat-bins" onchange="updateLatency()">
+            <option value="5" selected>5 bins (this project)</option>
+            <option value="3">3 bins</option>
+            <option value="8">8 bins</option>
+          </select>
+        </div>
+      </div>
+
+      <div class="latency-output" id="latency-output">
+        <!-- populated by JS -->
+      </div>
+
+      <div style="margin-top:14px;padding:10px 16px;border-radius:9px;background:rgba(251,191,36,.05);border:1px solid rgba(251,191,36,.2);font-size:.78rem;color:var(--dim2)">
+        ⚠ Anchor: ~54 tok/s prefill measured on real S24+ (W8A16, 5-bin, burst, 512-tok, qnn-net-run). Per-reload overhead included. Decode [1,1,dim] not yet measured — lm_head is ~512× cheaper than prefill-shaped graph. All non-anchor values are scaled estimates for illustration.
+      </div>
+    </div>
+  </div>
+
   <!-- COMING SOON — GATED MASTER DROP TEASER -->
   <div class="section reveal" id="coming-soon" style="margin-top:80px">
     <div style="
@@ -1544,6 +1773,205 @@ new Chart(ctx2,{
 if(window.innerWidth<640){
   document.querySelectorAll('.hw-grid').forEach(g=>g.style.gridTemplateColumns='1fr');
 }
+
+/* ===== TOOL A: QNN WALL CHECKER ===== */
+function runWallCheck(){
+  const b=parseFloat(document.getElementById('wall-bits').value);
+  const sz=parseFloat(document.getElementById('wall-size').value);
+  const bins=parseInt(document.getElementById('wall-bins').value);
+  // Rough estimate: bytes per param at bitwidth, plus ~10% overhead for ops/tensors
+  const bytesPerParam = b===16?2 : b===8?1 : 0.5;
+  const totalGB = sz*1e9*bytesPerParam*(1.10)/1e9;
+  const perBinGB = totalGB/bins;
+  // Known walls (publicly documented):
+  // 1. Protobuf 2GB serialize limit for a single ONNX model
+  const wall_proto = perBinGB > 1.9;
+  const wall_proto_warn = perBinGB > 1.4;
+  // 2. ARM64 ADRP ±4GB relocation: symbol table in generated C++ from ONNX->QNN, big models hit this
+  const wall_adrp = totalGB > 3.6;
+  const wall_adrp_warn = totalGB > 2.8;
+  // 3. RoPE shape mismatch: always present in stock implementations regardless of size
+  const wall_rope = true;
+
+  const panel = document.getElementById('wall-result');
+  let cls = 'ok'; if(wall_proto||wall_adrp) cls='err'; else if(wall_proto_warn||wall_adrp_warn) cls='warn';
+  panel.className='tool-result-panel '+cls;
+
+  const protoStatus = wall_proto ? `<span class="wall-err">✗ WALL HIT</span>` : wall_proto_warn ? `<span class="wall-warn">⚠ APPROACHING (${perBinGB.toFixed(2)} GB / bin)</span>` : `<span class="wall-ok">✓ Clear (${perBinGB.toFixed(2)} GB / bin)</span>`;
+  const adrpStatus = wall_adrp ? `<span class="wall-err">✗ WALL HIT (${totalGB.toFixed(1)} GB total)</span>` : wall_adrp_warn ? `<span class="wall-warn">⚠ Risk zone (${totalGB.toFixed(1)} GB)</span>` : `<span class="wall-ok">✓ Clear (${totalGB.toFixed(1)} GB total)</span>`;
+  const ropeStatus = `<span class="wall-err">✗ WALL HIT — present in all stock RoPE export paths</span>`;
+
+  panel.innerHTML=`
+    <div class="tool-result-title" style="color:var(--text);margin-bottom:14px">
+      ${cls==='err'?'<span class="wall-err">Export walls detected</span>':cls==='warn'?'<span class="wall-warn">Export warnings</span>':'<span class="wall-ok">No size walls — RoPE wall still applies</span>'}
+      <span style="font-size:.76rem;color:var(--dim);font-weight:400;margin-left:8px">${sz}B · W${b}A16 · ${bins} bin${bins>1?'s':''} · ${totalGB.toFixed(2)} GB total</span>
+    </div>
+    <ul class="tool-result-list">
+      <li><span class="wall-icon">📦</span><div><strong>2 GB Protobuf Limit</strong> (per-bin serialize) — ${protoStatus}</div></li>
+      <li><span class="wall-icon">🔗</span><div><strong>ARM64 ADRP ±4 GB Relocation</strong> (QNN codegen C++ symbol table) — ${adrpStatus}</div></li>
+      <li><span class="wall-icon">〰️</span><div><strong>RoPE Shape Mismatch</strong> (cos/sin broadcast vs. rotate_half on static graph) — ${ropeStatus}</div></li>
+    </ul>
+    <a href="#access" class="sovereign-cta-inline">🔒 SOVEREIGN ROADS solved this →</a>
+  `;
+}
+runWallCheck();
+
+/* ===== TOOL B: ROPE SHAPE VISUALIZER ===== */
+let ropeMode='broken';
+let ropeAnimFrame=null;
+let ropeT=0;
+
+function setRopeMode(mode){
+  ropeMode=mode;
+  document.getElementById('rope-btn-broken').classList.toggle('active',mode==='broken');
+  document.getElementById('rope-btn-aligned').classList.toggle('active',mode==='aligned');
+  const status=document.getElementById('rope-status');
+  if(mode==='aligned'){
+    status.style.background='rgba(45,212,191,.07)';
+    status.style.borderColor='rgba(45,212,191,.3)';
+    status.style.color='var(--teal)';
+    status.textContent='✓ Aligned: shapes reshaped to [batch,heads,seq,dim/2] before multiply — broadcast resolves cleanly across all static graph export paths';
+  } else {
+    status.style.background='rgba(248,113,113,.07)';
+    status.style.borderColor='rgba(248,113,113,.3)';
+    status.style.color='var(--red)';
+    status.textContent='✗ Shape mismatch: cos [seq,1,1,dim/2] ✕ rotate_half [batch,heads,seq,dim/2] — broadcast dimension collision on static export graph';
+  }
+}
+
+function drawRope(){
+  const canvas=document.getElementById('ropeCanvas');
+  if(!canvas)return;
+  const ctx=canvas.getContext('2d');
+  canvas.width=canvas.offsetWidth||800;
+  canvas.height=200;
+  const W=canvas.width,H=canvas.height;
+  ctx.clearRect(0,0,W,H);
+
+  const aligned=(ropeMode==='aligned');
+  ropeT+=0.04;
+
+  // Draw 3 tensor shape boxes with animated pulse
+  const boxes=[
+    {label:'cos cache',shape:aligned?'[B,H,S,D/2]':'[S,1,1,D/2]',color:'#a78bfa',x:0.08},
+    {label:'sin cache',shape:aligned?'[B,H,S,D/2]':'[S,1,1,D/2]',color:'#2dd4bf',x:0.40},
+    {label:'rotate_half(q)',shape:'[B,H,S,D/2]',color:'#fbbf24',x:0.72},
+  ];
+
+  boxes.forEach(box=>{
+    const bx=W*box.x,by=30,bw=W*0.24,bh=70;
+    const pulse=0.7+0.3*Math.sin(ropeT+(box.x*10));
+    ctx.save();
+    ctx.globalAlpha=0.18*pulse;
+    ctx.fillStyle=box.color;
+    ctx.beginPath();ctx.roundRect(bx,by,bw,bh,10);ctx.fill();
+    ctx.restore();
+    ctx.strokeStyle=box.color;
+    ctx.lineWidth=1.5;
+    ctx.globalAlpha=0.7+0.3*Math.sin(ropeT+(box.x*10));
+    ctx.beginPath();ctx.roundRect(bx,by,bw,bh,10);ctx.stroke();
+    ctx.globalAlpha=1;
+    ctx.fillStyle=box.color;
+    ctx.font=`600 11px 'JetBrains Mono',monospace`;
+    ctx.textAlign='center';
+    ctx.fillText(box.label,bx+bw/2,by+25);
+    ctx.fillStyle='rgba(255,255,255,.75)';
+    ctx.font=`500 10px 'JetBrains Mono',monospace`;
+    ctx.fillText(box.shape,bx+bw/2,by+48);
+  });
+
+  // Draw multiplication arrows between boxes
+  [[0,1],[1,2]].forEach(([i,j])=>{
+    const ax=W*boxes[i].x+W*0.24+4,ay=65;
+    const bx2=W*boxes[j].x-4,by2=65;
+    ctx.strokeStyle='rgba(255,255,255,.25)';
+    ctx.lineWidth=1.5;
+    ctx.beginPath();ctx.moveTo(ax,ay);ctx.lineTo(bx2,ay);ctx.stroke();
+    ctx.fillStyle='rgba(255,255,255,.25)';
+    ctx.font='bold 14px sans-serif';
+    ctx.textAlign='center';
+    ctx.fillText('×',ax+(bx2-ax)/2,ay+5);
+  });
+
+  // Result row
+  const resultY=140;
+  if(aligned){
+    ctx.fillStyle='rgba(45,212,191,.15)';
+    ctx.beginPath();ctx.roundRect(W*0.2,resultY,W*0.6,46,12);ctx.fill();
+    ctx.strokeStyle='rgba(45,212,191,.7)';ctx.lineWidth=1.5;
+    ctx.beginPath();ctx.roundRect(W*0.2,resultY,W*0.6,46,12);ctx.stroke();
+    ctx.fillStyle='#2dd4bf';ctx.font='700 12px \'JetBrains Mono\',monospace';ctx.textAlign='center';
+    ctx.fillText('✓  Result: [B, H, S, D/2]  — shapes aligned, broadcast clean',W/2,resultY+28);
+  } else {
+    const errPulse=0.6+0.4*Math.abs(Math.sin(ropeT*1.8));
+    ctx.fillStyle=`rgba(248,113,113,${0.12*errPulse})`;
+    ctx.beginPath();ctx.roundRect(W*0.2,resultY,W*0.6,46,12);ctx.fill();
+    ctx.strokeStyle=`rgba(248,113,113,${0.7*errPulse})`;ctx.lineWidth=1.5;
+    ctx.beginPath();ctx.roundRect(W*0.2,resultY,W*0.6,46,12);ctx.stroke();
+    ctx.fillStyle=`rgba(248,113,113,${0.6+0.4*errPulse})`;
+    ctx.font='700 12px \'JetBrains Mono\',monospace';ctx.textAlign='center';
+    ctx.fillText('✗  SHAPE ERROR: [S,1,1,D/2] broadcast fails against [B,H,S,D/2]',W/2,resultY+28);
+  }
+
+  ropeAnimFrame=requestAnimationFrame(drawRope);
+}
+
+// Start rope animation when visible
+const ropeObs=new IntersectionObserver(entries=>{
+  entries.forEach(e=>{
+    if(e.isIntersecting){if(!ropeAnimFrame)drawRope();}
+    else{if(ropeAnimFrame){cancelAnimationFrame(ropeAnimFrame);ropeAnimFrame=null;}}
+  });
+},{threshold:0.1});
+const ropeSection=document.getElementById('rope-viz');
+if(ropeSection)ropeObs.observe(ropeSection);
+
+/* ===== TOOL C: ON-DEVICE LATENCY ESTIMATOR ===== */
+function updateLatency(){
+  const toks=parseInt(document.getElementById('lat-tokens').value);
+  const bits=parseInt(document.getElementById('lat-bits').value);
+  const bins=parseInt(document.getElementById('lat-bins').value);
+  document.getElementById('lat-tok-display').textContent=toks;
+
+  // Anchor: 512 tokens, W8A16, 5 bins → ~54 tok/s prefill (real measured)
+  // Scale prefill by tokens linearly (prefill is compute-bound, roughly linear)
+  // Scale bitwidth: W8A16=1x, W4A16=~1.4x faster, FP16=~0.55x (memory BW bound)
+  const bwScale = bits===8?1 : bits===4?1.40 : 0.55;
+  // Bin penalty: each bin adds ~224ms reload overhead currently
+  const reloadOverhead = bins*0.224;
+  const baseTps = 54*bwScale;
+  const prefillS = toks/baseTps + reloadOverhead;
+  const prefillTps = toks/prefillS;
+  // Decode: estimate (decode-shaped graph not yet measured — illustrative scale from prefill)
+  const decodeMs = (1/baseTps)*1000*(1/512)*1000; // 1 token, lm_head 512x cheaper
+  // Clarify: decode estimate is illustrative (not yet benchmarked)
+  const decodeNote = bits===8?'est. (not yet benchmarked)':'scaled est.';
+
+  const out=document.getElementById('latency-output');
+  out.innerHTML=`
+    <div class="latency-stat highlight">
+      <div class="latency-val">${prefillTps.toFixed(1)}</div>
+      <div class="latency-lbl">tok/s prefill</div>
+      <div class="latency-note">${toks} tokens, W${bits}A16</div>
+    </div>
+    <div class="latency-stat">
+      <div class="latency-val">${prefillS.toFixed(2)}s</div>
+      <div class="latency-lbl">prefill latency</div>
+      <div class="latency-note">incl. ${bins}-bin reload</div>
+    </div>
+    <div class="latency-stat">
+      <div class="latency-val">${decodeMs.toFixed(1)}ms</div>
+      <div class="latency-lbl">decode / tok</div>
+      <div class="latency-note">${decodeNote}</div>
+    </div>
+    <div class="latency-stat">
+      <div class="latency-val">${bins}</div>
+      <div class="latency-lbl">graph bins</div>
+      <div class="latency-note">${(bins*224).toFixed(0)}ms reload est.</div>
+    </div>
+  `;
+}
+updateLatency();
 </script>
 </body>
 </html>
