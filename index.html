@@ -2019,3 +2019,19 @@ updateLatency();
 // Ensure all charts render even if init raced the load; Chart.js redraws are idempotent.
 window.addEventListener('load',function(){try{if(window.Chart){document.querySelectorAll('canvas').forEach(function(c){if(c.offsetHeight<10){c.style.minHeight='220px';}});}}catch(e){}});
 </script>
+<script id="sovereign-slider-fix">
+window.addEventListener('load',function(){try{
+ var d=document.getElementById('slider-divider'),o=document.getElementById('reason-right-overlay'),i=document.getElementById('reason-right-inner');
+ if(!d||!o)return; var wrap=d.closest('.compare')||d.parentElement; var drag=false;
+ function set(p){p=Math.max(8,Math.min(92,p));d.style.left=p+'%';o.style.left=p+'%';if(i){i.style.marginLeft=(-p)+'%';i.style.width=(100+p)+'%';}}
+ function gx(e){return e.touches?e.touches[0].clientX:e.clientX;}
+ function mv(e){if(!drag)return;var r=wrap.getBoundingClientRect();set((gx(e)-r.left)/r.width*100);}
+ d.style.cursor='ew-resize';
+ d.addEventListener('mousedown',function(e){drag=true;e.preventDefault();});
+ d.addEventListener('touchstart',function(){drag=true;},{passive:true});
+ window.addEventListener('mousemove',mv);window.addEventListener('touchmove',mv,{passive:true});
+ window.addEventListener('mouseup',function(){drag=false;});window.addEventListener('touchend',function(){drag=false;});
+ wrap.addEventListener('click',function(e){var r=wrap.getBoundingClientRect();set((e.clientX-r.left)/r.width*100);});
+ set(50);
+}catch(e){}});
+</script>
